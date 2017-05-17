@@ -98,3 +98,51 @@ end
 //*************** output declarations *********
 // ********************************************    
 endmodule
+
+
+/*
+
+//borders
+    //top horizantal line
+    WRITE_REGISTER (4, 4, 252, 4);
+    
+    //button horizantal line
+
+    WRITE_REGISTER (4, 252, 252, 252);
+    
+    //Right vertical line
+
+    WRITE_REGISTER (252, 4, 252, 252);
+
+    //left vertical line
+
+    WRITE_REGISTER (4, 4, 4, 252);    
+    
+    //top right diagonal line
+
+    WRITE_REGISTER (222, 4, 251, 41); 
+
+    //triangle in the middle
+
+    WRITE_REGISTER (86, 120, 127, 96);
+
+    WRITE_REGISTER (127, 96, 168, 120);   
+   
+    
+    //left paddel extention
+    
+    WRITE_REGISTER (4, 210, 64, 210);
+    
+    WRITE_REGISTER (4, 154, 64, 210);
+     
+    WRITE_REGISTER (64, 210, 90, 230);
+        
+    //right paddel extention
+
+    WRITE_REGISTER (252, 210, 193, 210);
+    
+    WRITE_REGISTER (252, 154, 193, 210);
+     
+    WRITE_REGISTER (193, 210, 167, 230);
+
+*/
