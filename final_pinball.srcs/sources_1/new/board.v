@@ -56,30 +56,30 @@ initial
 begin
     // Draw with a high intensity
     // Draw horizontal and vertical crosshairs 1 of 4
-     WRITE_REGISTER (128,126,156,100,REG_DATA_BEAM_HI,REG_DATA_MODE_HLD); 
+     DRAW_LINE (128,126,156,100,REG_DATA_BEAM_HI,REG_DATA_MODE_HLD); 
      //SET_GO_POLL_BUSY;
     // Draw horizontal and vertical crosshairs 2 of 4
-     WRITE_REGISTER (128,130,128,156,REG_DATA_BEAM_HI,REG_DATA_MODE_HLD); 
+     DRAW_LINE (128,130,128,156,REG_DATA_BEAM_HI,REG_DATA_MODE_HLD); 
      //SET_GO_POLL_BUSY;
     // Draw horizontal and vertical crossharis 3 of 4
-     WRITE_REGISTER (126,128,100,128,REG_DATA_BEAM_HI,REG_DATA_MODE_HLD); 
+     DRAW_LINE (126,128,100,128,REG_DATA_BEAM_HI,REG_DATA_MODE_HLD); 
      //SET_GO_POLL_BUSY;
     // Draw horizontal and veritcal crosshairs 4 of 4
-    WRITE_REGISTER (130,128,156,128,REG_DATA_BEAM_HI,REG_DATA_MODE_HLD); // write(startx,starty, endx, endy)
+    DRAW_LINE (130,128,156,128,REG_DATA_BEAM_HI,REG_DATA_MODE_HLD); // write(startx,starty, endx, endy)
     //SET_GO_POLL_BUSY;
     //DRAW LETTER A
-    WRITE_REGISTER (108,80,128,10,REG_DATA_BEAM_HI,REG_DATA_MODE_HLD);
+    DRAW_LINE (108,80,128,10,REG_DATA_BEAM_HI,REG_DATA_MODE_HLD);
     //SET_GO_POLL_BUSY;
-    WRITE_REGISTER (128,10,148,80,REG_DATA_BEAM_HI,REG_DATA_MODE_HLD);
+    DRAW_LINE (128,10,148,80,REG_DATA_BEAM_HI,REG_DATA_MODE_HLD);
     //SET_GO_POLL_BUSY;
-    WRITE_REGISTER (120,40,136,40,REG_DATA_BEAM_HI,REG_DATA_MODE_HLD);
+    DRAW_LINE (120,40,136,40,REG_DATA_BEAM_HI,REG_DATA_MODE_HLD);
     //SET_GO_POLL_BUSY;
     //DRAW NUMBER 4
-    WRITE_REGISTER (128,250,128,190,REG_DATA_BEAM_HI,REG_DATA_MODE_HLD);
+    DRAW_LINE (128,250,128,190,REG_DATA_BEAM_HI,REG_DATA_MODE_HLD);
     //SET_GO_POLL_BUSY;
-    WRITE_REGISTER (128,190,110,225,REG_DATA_BEAM_HI,REG_DATA_MODE_HLD);
+    DRAW_LINE (128,190,110,225,REG_DATA_BEAM_HI,REG_DATA_MODE_HLD);
     //SET_GO_POLL_BUSY;
-    WRITE_REGISTER (110,225,130,225,REG_DATA_BEAM_HI,REG_DATA_MODE_HLD);
+    DRAW_LINE (110,225,130,225,REG_DATA_BEAM_HI,REG_DATA_MODE_HLD);
     //SET_GO_POLL_BUSY;
 end
     
@@ -89,7 +89,7 @@ end
   // Describe a task that will select a register
   // and write it with data.
 
-  task WRITE_REGISTER;
+  task DRAW_LINE;
     // This task is using the negative edge
     // of the pclock to apply the inputs to
     // the register interface centered over
@@ -114,7 +114,7 @@ end
       while (busy)
       begin
         @(posedge pclk);
-        $display("Info: it is busy, waiting...");
+        $display("Info: it is currently drawing, waiting...");
       end
   end
   endtask
