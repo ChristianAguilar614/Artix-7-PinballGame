@@ -3,7 +3,7 @@
 <!--                                                         -->
 <!-- Copyright 1986-2016 Xilinx, Inc. All Rights Reserved.   -->
 
-<Project Version="7" Minor="17" Path="Z:/Cloud/Github/Pinball/Artix-7-PinballGame/final_pinball.xpr">
+<Project Version="7" Minor="17" Path="Z:/Documents/School/SJSU/EE 178/Pinball/final_pinball.xpr">
   <DefaultLaunch Dir="$PRUNDIR"/>
   <Configuration>
     <Option Name="Id" Val="9e7c3c412beb48289119e24698382a00"/>

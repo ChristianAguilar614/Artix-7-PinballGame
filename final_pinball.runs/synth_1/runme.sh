@@ -24,7 +24,7 @@ else
 fi
 export LD_LIBRARY_PATH
 
-HD_PWD='Z:/Cloud/Github/Pinball/Artix-7-PinballGame/final_pinball.runs/synth_1'
+HD_PWD='Z:/Documents/School/SJSU/EE 178/Pinball/final_pinball.runs/synth_1'
 cd "$HD_PWD"
 
 HD_LOG=runme.log

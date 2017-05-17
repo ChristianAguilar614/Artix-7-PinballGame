@@ -272,51 +272,18 @@ module game_display (
 
   reg [7:0] stax, stay = 0;
   reg [7:0] endx, endy = 0;
-  reg [17:1] prng = 1;
   reg [3:0] beam = 0;
   reg [1:0] mode = 0;
   reg go = 0;
   wire busy;
-
-//  always @*
-//  begin
-//    case (address)
-//      3'd0: read_data = stax;
-//      3'd1: read_data = stay;
-//      3'd2: read_data = endx;
-//      3'd3: read_data = endy;
-//      3'd4: read_data = {7'b0, busy};
-//      3'd5: read_data = {4'b0, beam};
-//      3'd6: read_data = {6'b0, mode};
-//      3'd7: read_data = prng[8:1];
-//      default: read_data = 8'bx;
-//    endcase
-//  end
-
-//  always @(posedge pclk)
-//  begin
-//    go <= write && (address == 3'd4) && write_data[0];
-//    prng <= {prng[16:1], (prng[17] ^ prng[14])};
-//    if (write)
-//    begin
-//      case (address)
-//        3'd0: stax <= write_data;
-//        3'd1: stay <= write_data;
-//        3'd2: endx <= write_data;
-//        3'd3: endy <= write_data;
-//        3'd5: beam <= write_data[3:0];
-//        3'd6: mode <= write_data[1:0];
-//      endcase 
-//    end
-//  end
 
   assign framebuffer_mode = mode;
  
  board boardDisplay (
     .clk(clk),
     .pclk_mirror(pclk_mirror),
-    .stax(startx),
-    .stary(starty),
+    .stax(stax),
+    .stary(stay),
     .endx(endx),
     .endy(endy),
     .mode(mode),
