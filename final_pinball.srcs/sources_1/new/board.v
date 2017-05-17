@@ -13,7 +13,6 @@
 
 
 module board(
-	input wire clk,
 	input wire pclk,
 	output reg [7:0] startx = 0,
 	output reg [7:0] starty = 0,

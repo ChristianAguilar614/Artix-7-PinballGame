@@ -68,9 +68,6 @@ always @(posedge clk_ss) safe_start <= {safe_start[6:0],locked};
 
 BUFGCE clk_out_bufgce (.I(clk_out),.CE(safe_start[7]),.O(pclk));
 
-// Mirrors pclk on a pin for use by the testbench;
-// not functionally required for this design to work.
-
 // Instantiate the vga_timing module, which is
 // the module you are designing for this lab.
 
@@ -87,6 +84,18 @@ vga_timing my_timing (
 	.hblnk(hblnk),
 	.pclk(pclk)
 );
+
+// Create a slower clock for the game movements;
+
+reg [7:0] frame_counter = 0;
+wire gameclk;
+
+assign gameclk = (frame_counter == 5); // clk every 6 (0-5) frames, or 10 FPS
+
+always @(posedge vsync)
+begin
+	frame_counter <= frame_counter + 1;
+end
 
 // We want to put the 256x256 framebuffer into
 // the visual center of the 800x600 display.
@@ -268,8 +277,7 @@ wire busy;
 assign framebuffer_mode = mode;
 
 board boardDisplay (
-	.clk(clk),
-	.pclk(pclk),
+.pclk(pclk),
 	.startx(stax),
 	.starty(stay),
 	.endx(endx),
