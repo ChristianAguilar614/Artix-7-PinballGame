@@ -1,10 +1,10 @@
--- Copyright 1986-2016 Xilinx, Inc. All Rights Reserved.
+-- Copyright 1986-2017 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
--- Tool Version: Vivado v.2016.4 (win64) Build 1756540 Mon Jan 23 19:11:23 MST 2017
--- Date        : Tue May 16 18:01:25 2017
+-- Tool Version: Vivado v.2017.1 (win64) Build 1846317 Fri Apr 14 18:55:03 MDT 2017
+-- Date        : Wed May 17 03:52:20 2017
 -- Host        : WinbookPro running 64-bit major release  (build 9200)
--- Command     : write_vhdl -force -mode synth_stub {Z:/Documents/School/SJSU/EE
---               178/Pinball/final_pinball.srcs/sources_1/ip/framebuffer/framebuffer_stub.vhdl}
+-- Command     : write_vhdl -force -mode synth_stub -rename_top framebuffer -prefix
+--               framebuffer_ framebuffer_stub.vhdl
 -- Design      : framebuffer
 -- Purpose     : Stub declaration of top-level module interface
 -- Device      : xc7a35tcpg236-1
@@ -34,6 +34,6 @@ attribute black_box_pad_pin : string;
 attribute syn_black_box of stub : architecture is true;
 attribute black_box_pad_pin of stub : architecture is "clka,wea[0:0],addra[15:0],dina[3:0],douta[3:0],clkb,web[0:0],addrb[14:0],dinb[7:0],doutb[7:0]";
 attribute x_core_info : string;
-attribute x_core_info of stub : architecture is "blk_mem_gen_v8_3_5,Vivado 2016.4";
+attribute x_core_info of stub : architecture is "blk_mem_gen_v8_3_6,Vivado 2017.1";
 begin
 end;

@@ -260,12 +260,22 @@ begin
 	irq <= vblnk_delayed && !vblnk_delayed_twice;
 end
 
-// Implement register file for passing info.
-// There is a read port and a write port, and
-// these should be connected to some other
-// synchronous process -- use of buttons and
-// switches is technically incorrect but is
-// workable for purposes of demonstration.
+
+
+//*************** Ball Instantiation *********
+wire [7:0] ballTLX;
+wire [7:0] ballTLY;
+wire [3:0] ball_size;
+
+ball gameBall(
+.gameclk(gameclk),
+.topleft_x(ballTLX),
+.topleft_y(ballTLY),
+.size(ball_size)
+);
+// ********************************************
+
+//***************  Board setup ****************
 
 wire [7:0] stax, stay;
 wire [7:0] endx, endy;
@@ -286,8 +296,14 @@ board boardDisplay (
 	.mode(mode),
 	.beam(beam),
 	.go(go),
-	.busy(busy)
+	.busy(busy),
+	.ballX(ballTLX),
+	.ballY(ballTLY),
+	.ballSize(ball_size)
 );
+
+// ********************************************
+
 
 // This module draws lines from the start
 // coordinate to the end coordinate.  After

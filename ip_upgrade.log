@@ -1,0 +1,16 @@
+Copyright 1986-2017 Xilinx, Inc. All Rights Reserved.
+------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2017.1 (win64) Build 1846317 Fri Apr 14 18:55:03 MDT 2017
+| Date         : Wed May 17 03:49:10 2017
+| Host         : WinbookPro running 64-bit major release  (build 9200)
+| Command      : upgrade_ip
+| Device       : xc7a35tcpg236-1
+------------------------------------------------------------------------------------
+
+Upgrade Log for IP 'framebuffer'
+
+1. Summary
+----------
+
+SUCCESS in the upgrade of framebuffer (xilinx.com:ip:blk_mem_gen:8.3) from (Rev. 5) to (Rev. 6)
+

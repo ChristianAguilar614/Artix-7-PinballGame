@@ -22,7 +22,10 @@ module board(
 	output reg [1:0] mode = 0,
 	output reg [3:0] beam = 0,
 	input wire busy,
-	output reg go = 0
+	output reg go = 0,
+	input wire ballX,
+	input wire ballY,
+	input wire ballSize
 );
  
 //************* might be unessisary ******
@@ -99,18 +102,6 @@ begin
 	end
 	else go <= 0;
 end
-
-//*************** Ball Instantiation *********
-reg [7:0] ballTLX;
-reg [7:0] ballTLY;
-reg [3:0] size;
-
-ball gameBall(
-.gameclk(gameclk),
-.topleft_x(ballTLX),
-.topleft_y(ballTLY),
-.size(ballSize)
-);
-// ********************************************    
+    
 endmodule
 
