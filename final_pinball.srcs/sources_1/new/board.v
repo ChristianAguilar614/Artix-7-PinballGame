@@ -14,6 +14,7 @@
 
 module board(
 	input wire pclk,
+	input wire gameclk,
 	output reg [7:0] startx = 0,
 	output reg [7:0] starty = 0,
 	output reg [7:0] endx = 0,
@@ -63,21 +64,25 @@ begin
             if (!go) // if a go pulse is not in progress
             begin
                 case (setup_state)
-					4'h0: {startx, starty, endx, endy, beam, mode} <= {8'd200, 8'd200, 8'd210, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD};
-					4'h1: {startx, starty, endx, endy, beam, mode} <= {8'd128, 8'd200, 8'd128, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD};
-					4'h2: {startx, starty, endx, endy, beam, mode} <= {8'd100, 8'd100, 8'd90, 8'd90, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD};
-					4'h3: {startx, starty, endx, endy, beam, mode} <= {8'd100, 8'd200, 8'd90, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD};
-					4'h4: {startx, starty, endx, endy, beam, mode} <= {8'd200, 8'd100, 8'd210, 8'd90, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD};
-					4'h5: {startx, starty, endx, endy, beam, mode} <= {8'd100, 8'd128, 8'd90, 8'd128, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD};
-					4'h6: {startx, starty, endx, endy, beam, mode} <= {8'd128, 8'd100, 8'd128, 8'd90, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD};
-					4'h7: {startx, starty, endx, endy, beam, mode} <= {8'd200, 8'd128, 8'd210, 8'd128, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD};
-					4'h8: ;
-                    4'h9: ;
-					4'hA: ;
-					4'hB: ;
-					4'hC: ;
-					4'hD: ;
-					4'hE: ;
+                    //borders
+					4'h0: {startx, starty, endx, endy, beam, mode} <= {8'd004, 8'd004, 8'd252, 8'd004, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD};//top horizantal line
+					4'h1: {startx, starty, endx, endy, beam, mode} <= {8'd004, 8'd252, 8'd252, 8'd252, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD};//button horizantal line
+					4'h2: {startx, starty, endx, endy, beam, mode} <= {8'd252, 8'd004, 8'd252, 8'd252, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //Right vertical line
+					4'h3: {startx, starty, endx, endy, beam, mode} <= {8'd004, 8'd004, 8'd004, 8'd252, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //left vertical line
+					4'h4: {startx, starty, endx, endy, beam, mode} <= {8'd222, 8'd004, 8'd251, 8'd041, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //top right diagonal line
+					//triangle in the middle
+					4'h5: {startx, starty, endx, endy, beam, mode} <= {8'd086, 8'd120, 8'd127, 8'd096, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //86, 120, 127, 96
+					4'h6: {startx, starty, endx, endy, beam, mode} <= {8'd127, 8'd096, 8'd168, 8'd120, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //127, 96, 168, 120
+					//left paddel extention
+					4'h7: {startx, starty, endx, endy, beam, mode} <= {8'd004, 8'd210, 8'd064, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //4, 210, 64, 210
+					4'h8: {startx, starty, endx, endy, beam, mode} <= {8'd004, 8'd154, 8'd064, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //4, 154, 64, 210
+                    4'h9: {startx, starty, endx, endy, beam, mode} <= {8'd064, 8'd210, 8'd090, 8'd230, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //64, 210, 90, 230
+                    //right paddel extention
+					4'hA: {startx, starty, endx, endy, beam, mode} <= {8'd252, 8'd210, 8'd193, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //252, 210, 193, 210
+					4'hB: {startx, starty, endx, endy, beam, mode} <= {8'd252, 8'd154, 8'd193, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //252, 154, 193, 210
+					4'hC: {startx, starty, endx, endy, beam, mode} <= {8'd193, 8'd210, 8'd167, 8'd230, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //193, 210, 167, 230
+					4'hD: ; //
+					4'hE: ; //
 					4'hF: ; // should never get here
                             
 					default: ;
@@ -95,54 +100,17 @@ begin
 	else go <= 0;
 end
 
-//*************** output declarations *********
+//*************** Ball Instantiation *********
+reg [7:0] ballTLX;
+reg [7:0] ballTLY;
+reg [3:0] size;
+
+ball gameBall(
+.gameclk(gameclk),
+.topleft_x(ballTLX),
+.topleft_y(ballTLY),
+.size(ballSize)
+);
 // ********************************************    
 endmodule
 
-
-/*
-
-//borders
-    //top horizantal line
-    WRITE_REGISTER (4, 4, 252, 4);
-    
-    //button horizantal line
-
-    WRITE_REGISTER (4, 252, 252, 252);
-    
-    //Right vertical line
-
-    WRITE_REGISTER (252, 4, 252, 252);
-
-    //left vertical line
-
-    WRITE_REGISTER (4, 4, 4, 252);    
-    
-    //top right diagonal line
-
-    WRITE_REGISTER (222, 4, 251, 41); 
-
-    //triangle in the middle
-
-    WRITE_REGISTER (86, 120, 127, 96);
-
-    WRITE_REGISTER (127, 96, 168, 120);   
-   
-    
-    //left paddel extention
-    
-    WRITE_REGISTER (4, 210, 64, 210);
-    
-    WRITE_REGISTER (4, 154, 64, 210);
-     
-    WRITE_REGISTER (64, 210, 90, 230);
-        
-    //right paddel extention
-
-    WRITE_REGISTER (252, 210, 193, 210);
-    
-    WRITE_REGISTER (252, 154, 193, 210);
-     
-    WRITE_REGISTER (193, 210, 167, 230);
-
-*/

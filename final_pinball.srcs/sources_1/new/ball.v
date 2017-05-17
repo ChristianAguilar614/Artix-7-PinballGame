@@ -14,12 +14,10 @@
 `define max_velo 3
 
 module ball(
-    input wire clk,
-    input wire board,
-    output reg topleft_x = 4'h0000, // just store single corner
-    output reg topleft_y = 4'h0000, // others can be calculated
-    
-    output wire size
+    input wire gameclk,
+    output reg [7:0] topleft_x, // just store single corner
+    output reg [7:0] topleft_y, // others can be calculated
+    output wire [3:0] size
     );
      
 //    reg speed;
@@ -36,7 +34,7 @@ module ball(
     // set size of ball ?
     assign size = 1'h4;
     
-    always @(posedge clk)
+    always @(posedge gameclk)
     begin
         // Check Collision on current location
         // check top
