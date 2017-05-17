@@ -39,58 +39,6 @@ set_property IOSTANDARD LVCMOS33 [get_ports {b[2]}]
 set_property PACKAGE_PIN J18 [get_ports {b[3]}]
 set_property IOSTANDARD LVCMOS33 [get_ports {b[3]}]
 
-# Constraints for PCLK_MIRROR
-set_property PACKAGE_PIN J1 [get_ports {pclk_mirror}]
-set_property IOSTANDARD LVCMOS33 [get_ports {pclk_mirror}]
-
-# Constraints for WRITE_DATA
-#set_property PACKAGE_PIN V17 [get_ports {write_data[0]}]
-#set_property IOSTANDARD LVCMOS33 [get_ports {write_data[0]}]
-#set_property PACKAGE_PIN V16 [get_ports {write_data[1]}]
-#set_property IOSTANDARD LVCMOS33 [get_ports {write_data[1]}]
-#set_property PACKAGE_PIN W16 [get_ports {write_data[2]}]
-#set_property IOSTANDARD LVCMOS33 [get_ports {write_data[2]}]
-#set_property PACKAGE_PIN W17 [get_ports {write_data[3]}]
-#set_property IOSTANDARD LVCMOS33 [get_ports {write_data[3]}]
-#set_property PACKAGE_PIN W15 [get_ports {write_data[4]}]
-#set_property IOSTANDARD LVCMOS33 [get_ports {write_data[4]}]
-#set_property PACKAGE_PIN V15 [get_ports {write_data[5]}]
-#set_property IOSTANDARD LVCMOS33 [get_ports {write_data[5]}]
-#set_property PACKAGE_PIN W14 [get_ports {write_data[6]}]
-#set_property IOSTANDARD LVCMOS33 [get_ports {write_data[6]}]
-#set_property PACKAGE_PIN W13 [get_ports {write_data[7]}]
-#set_property IOSTANDARD LVCMOS33 [get_ports {write_data[7]}]
-
-# Constraints for READ_DATA
-#set_property PACKAGE_PIN U16 [get_ports {read_data[0]}]
-#set_property IOSTANDARD LVCMOS33 [get_ports {read_data[0]}]
-#set_property PACKAGE_PIN E19 [get_ports {read_data[1]}]
-#set_property IOSTANDARD LVCMOS33 [get_ports {read_data[1]}]
-#set_property PACKAGE_PIN U19 [get_ports {read_data[2]}]
-#set_property IOSTANDARD LVCMOS33 [get_ports {read_data[2]}]
-#set_property PACKAGE_PIN V19 [get_ports {read_data[3]}]
-#set_property IOSTANDARD LVCMOS33 [get_ports {read_data[3]}]
-#set_property PACKAGE_PIN W18 [get_ports {read_data[4]}]
-#set_property IOSTANDARD LVCMOS33 [get_ports {read_data[4]}]
-#set_property PACKAGE_PIN U15 [get_ports {read_data[5]}]
-#set_property IOSTANDARD LVCMOS33 [get_ports {read_data[5]}]
-#set_property PACKAGE_PIN U14 [get_ports {read_data[6]}]
-#set_property IOSTANDARD LVCMOS33 [get_ports {read_data[6]}]
-#set_property PACKAGE_PIN V14 [get_ports {read_data[7]}]
-#set_property IOSTANDARD LVCMOS33 [get_ports {read_data[7]}]
-
-# Constraints for ADDRESS
-#set_property PACKAGE_PIN U1 [get_ports {address[0]}]
-#set_property IOSTANDARD LVCMOS33 [get_ports {address[0]}]
-#set_property PACKAGE_PIN T1 [get_ports {address[1]}]
-#set_property IOSTANDARD LVCMOS33 [get_ports {address[1]}]
-#set_property PACKAGE_PIN R2 [get_ports {address[2]}]
-#set_property IOSTANDARD LVCMOS33 [get_ports {address[2]}]
-
-# Constraints for WRITE
-#set_property PACKAGE_PIN U18 [get_ports {write}]
-#set_property IOSTANDARD LVCMOS33 [get_ports {write}]
-
 # Constraints for IRQ
 set_property PACKAGE_PIN L1 [get_ports {irq}]
 set_property IOSTANDARD LVCMOS33 [get_ports {irq}]

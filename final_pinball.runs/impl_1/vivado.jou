@@ -1,0 +1,12 @@
+#-----------------------------------------------------------
+# Vivado v2016.4 (64-bit)
+# SW Build 1756540 on Mon Jan 23 19:11:23 MST 2017
+# IP Build 1755317 on Mon Jan 23 20:30:07 MST 2017
+# Start of session at: Tue May 16 18:46:17 2017
+# Process ID: 9844
+# Current directory: Z:/Documents/School/SJSU/EE 178/Pinball/final_pinball.runs/impl_1
+# Command line: vivado.exe -log game_display.vdi -applog -product Vivado -messageDb vivado.pb -mode batch -source game_display.tcl -notrace
+# Log file: Z:/Documents/School/SJSU/EE 178/Pinball/final_pinball.runs/impl_1/game_display.vdi
+# Journal file: Z:/Documents/School/SJSU/EE 178/Pinball/final_pinball.runs/impl_1\vivado.jou
+#-----------------------------------------------------------
+source game_display.tcl -notrace

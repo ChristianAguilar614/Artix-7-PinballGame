@@ -14,15 +14,15 @@
 
 module board(
     input wire clk,
-    input wire pclk_mirror,
-    output reg [7:0] startx,
-    output reg [7:0]starty,
-    output reg [7:0]endx,
-    output reg [7:0]endy,
-    output reg [1:0]mode,
-    output reg [3:0]beam,
+    input wire pclk,
+    output reg [7:0] startx = 0,
+    output reg [7:0] starty = 0,
+    output reg [7:0] endx = 0,
+    output reg [7:0] endy = 0,
+    output reg [1:0] mode = 0,
+    output reg [3:0] beam = 0,
     input wire busy,
-    output reg go
+    output reg go = 0
     );
     
 //************* might be unessisary ******
@@ -52,7 +52,7 @@ localparam [1:0] REG_DATA_MODE_EXP = 8'h3;
 wire irq;
 
 
-always @ (posedge pclk_mirror)
+initial
 begin
     // Draw with a high intensity
     // Draw horizontal and vertical crosshairs 1 of 4
@@ -101,6 +101,7 @@ end
     input [3:0] data_beam;
     input [1:0] data_mode;
   begin
+      @(posedge pclk) 
       startx <= data_startx;
       starty <= data_starty;
       endx <= data_endx;
@@ -108,11 +109,16 @@ end
       beam <= data_beam;
       mode <= data_mode;
       go <= 1'b1;
-      while (busy) begin
-      //do nothing
+      @(posedge pclk);
+      go <= 1'b0;
+      while (busy)
+      begin
+        @(posedge pclk);
+        $display("Info: it is busy, waiting...");
       end
   end
   endtask
+
     
     
 //*************** output declarations *********

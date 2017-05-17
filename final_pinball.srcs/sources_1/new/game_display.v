@@ -17,7 +17,7 @@ module game_display (
   output reg [3:0] r,
   output reg [3:0] g,
   output reg [3:0] b,
-  output wire pclk_mirror,
+  //output wire pclk_mirror,
   
   //input wire write,
   output reg irq
@@ -73,15 +73,15 @@ module game_display (
   // Mirrors pclk on a pin for use by the testbench;
   // not functionally required for this design to work.
 
-  ODDR pclk_oddr (
-    .Q(pclk_mirror),
-    .C(pclk),
-    .CE(1'b1),
-    .D1(1'b1),
-    .D2(1'b0),
-    .R(1'b0),
-    .S(1'b0)
-  );
+//  ODDR pclk_oddr (
+//    .Q(pclk_mirror),
+//    .C(pclk),
+//    .CE(1'b1),
+//    .D1(1'b1),
+//    .D2(1'b0),
+//    .R(1'b0),
+//    .S(1'b0)
+//  );
 
   // Instantiate the vga_timing module, which is
   // the module you are designing for this lab.
@@ -270,20 +270,20 @@ module game_display (
   // switches is technically incorrect but is
   // workable for purposes of demonstration.
 
-  reg [7:0] stax, stay = 0;
-  reg [7:0] endx, endy = 0;
-  reg [3:0] beam = 0;
-  reg [1:0] mode = 0;
-  reg go = 0;
+  wire [7:0] stax, stay;
+  wire [7:0] endx, endy;
+  wire [3:0] beam;
+  wire [1:0] mode;
+  wire go;
   wire busy;
 
   assign framebuffer_mode = mode;
  
  board boardDisplay (
     .clk(clk),
-    .pclk_mirror(pclk_mirror),
-    .stax(stax),
-    .stary(stay),
+    .pclk(pclk),
+    .startx(stax),
+    .starty(stay),
     .endx(endx),
     .endy(endy),
     .mode(mode),
