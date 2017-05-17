@@ -42,7 +42,7 @@ IBUF clk_ibuf (.I(clk),.O(clk_in));
 MMCME2_BASE #(
 	.CLKIN1_PERIOD(10.000),
 	.CLKFBOUT_MULT_F(10.000),
-	.CLKOUT0_DIVIDE_F(25.000));
+	.CLKOUT0_DIVIDE_F(25.000))
 clk_in_mmcme2 (
 	.CLKIN1(clk_in),
 	.CLKOUT0(clk_out),
