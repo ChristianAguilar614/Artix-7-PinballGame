@@ -48,75 +48,52 @@ localparam [1:0] REG_DATA_MODE_CLR = 8'h1;
 localparam [1:0] REG_DATA_MODE_LIN = 8'h2;
 localparam [1:0] REG_DATA_MODE_EXP = 8'h3;
 
-wire irq;
 
+wire setup;
+reg [3:0] setup_state = 0;
 
-initial
+assign setup = !(setup_state == 4'hF);
+
+always @(posedge pclk)
 begin
-	// Draw with a high intensity
-	// Draw horizontal and vertical crosshairs 1 of 4
-	DRAW_LINE (128,126,156,100,REG_DATA_BEAM_HI,REG_DATA_MODE_HLD); 
-	//SET_GO_POLL_BUSY;
-	// Draw horizontal and vertical crosshairs 2 of 4
-	DRAW_LINE (128,130,128,156,REG_DATA_BEAM_HI,REG_DATA_MODE_HLD); 
-	//SET_GO_POLL_BUSY;
-	// Draw horizontal and vertical crossharis 3 of 4
-	DRAW_LINE (126,128,100,128,REG_DATA_BEAM_HI,REG_DATA_MODE_HLD); 
-	//SET_GO_POLL_BUSY;
-	// Draw horizontal and veritcal crosshairs 4 of 4
-	DRAW_LINE (130,128,156,128,REG_DATA_BEAM_HI,REG_DATA_MODE_HLD); // write(startx,starty, endx, endy)
-	//SET_GO_POLL_BUSY;
-	//DRAW LETTER A
-	DRAW_LINE (108,80,128,10,REG_DATA_BEAM_HI,REG_DATA_MODE_HLD);
-	//SET_GO_POLL_BUSY;
-	DRAW_LINE (128,10,148,80,REG_DATA_BEAM_HI,REG_DATA_MODE_HLD);
-	//SET_GO_POLL_BUSY;
-	DRAW_LINE (120,40,136,40,REG_DATA_BEAM_HI,REG_DATA_MODE_HLD);
-	//SET_GO_POLL_BUSY;
-	//DRAW NUMBER 4
-	DRAW_LINE (128,250,128,190,REG_DATA_BEAM_HI,REG_DATA_MODE_HLD);
-	//SET_GO_POLL_BUSY;
-	DRAW_LINE (128,190,110,225,REG_DATA_BEAM_HI,REG_DATA_MODE_HLD);
-	//SET_GO_POLL_BUSY;
-	DRAW_LINE (110,225,130,225,REG_DATA_BEAM_HI,REG_DATA_MODE_HLD);
-	//SET_GO_POLL_BUSY;
-end
-    
-    
-// Describe a task that will select a register
-// and write it with data.
-
-task DRAW_LINE;
-// This task is using the negative edge
-// of the pclock to apply the inputs to
-// the register interface centered over
-// the positive edge of the pclock.
-	input [7:0] data_startx;
-	input [7:0] data_starty;
-	input [7:0] data_endx;
-	input [7:0] data_endy;
-	input [3:0] data_beam;
-	input [1:0] data_mode;
-	begin
-		@(posedge pclk);
-		startx <= data_startx;
-		starty <= data_starty;
-		endx <= data_endx;
-		endy <= data_endy;
-		beam <= data_beam;
-		mode <= data_mode;
-		go <= 1'b0;
-		@(posedge pclk);
-		go <= 1'b1;
-		@(posedge pclk);
-		go <= 1'b0;
-		while (busy)
-		begin
-			@(posedge pclk);
-			$display("Info: it is currently drawing, waiting...");
-		end
+    if (!busy) // if no job already running
+    begin
+        if (setup) // if still in setup mode
+        begin
+            if (!go) // if a go pulse is not in progress
+            begin
+                case (setup_state)
+					4'h0: {startx, starty, endx, endy, beam, mode} <= {8'd200, 8'd200, 8'd210, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD};
+					4'h1: {startx, starty, endx, endy, beam, mode} <= {8'd128, 8'd200, 8'd128, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD};
+					4'h2: {startx, starty, endx, endy, beam, mode} <= {8'd100, 8'd100, 8'd90, 8'd90, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD};
+					4'h3: {startx, starty, endx, endy, beam, mode} <= {8'd100, 8'd200, 8'd90, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD};
+					4'h4: {startx, starty, endx, endy, beam, mode} <= {8'd200, 8'd100, 8'd210, 8'd90, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD};
+					4'h5: {startx, starty, endx, endy, beam, mode} <= {8'd100, 8'd128, 8'd90, 8'd128, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD};
+					4'h6: {startx, starty, endx, endy, beam, mode} <= {8'd128, 8'd100, 8'd128, 8'd90, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD};
+					4'h7: {startx, starty, endx, endy, beam, mode} <= {8'd200, 8'd128, 8'd210, 8'd128, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD};
+					4'h8: ;
+                    4'h9: ;
+					4'hA: ;
+					4'hB: ;
+					4'hC: ;
+					4'hD: ;
+					4'hE: ;
+					4'hF: ; // should never get here
+                            
+					default: ;
+				endcase
+				setup_state <= setup_state + 1;
+				go <= 1;
+            end
+            else go <= 0; // else end the go pulse
+        end
+        else // else in normal running mode
+        begin
+            // Pull from ball and levers
+        end
 	end
-endtask
+	else go <= 0;
+end
 
 //*************** output declarations *********
 // ********************************************    

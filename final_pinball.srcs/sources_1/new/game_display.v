@@ -277,7 +277,7 @@ wire busy;
 assign framebuffer_mode = mode;
 
 board boardDisplay (
-.pclk(pclk),
+    .pclk(pclk),
 	.startx(stax),
 	.starty(stay),
 	.endx(endx),

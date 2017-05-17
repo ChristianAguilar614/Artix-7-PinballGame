@@ -88,11 +88,11 @@ assign in_loop = (state == RUN);
 //Data Path for X and Y
 assign next_x = (in_loop) ? xb : x0;
 assign xb = e2_gt_dy ? xa : x;
-assign xa = right ? (x - 1) : (x + 1);
+assign xa = right ? (x + 1) : (x - 1);
 
 assign next_y = (in_loop) ? yb : y0;
 assign yb = e2_lt_dx ? ya : y;
-assign ya = down ? (y - 1) : (y + 1);
+assign ya = down ? (y + 1) : (y - 1);
 
 assign complete = ( (x == x1) && (y == y1) );
 
