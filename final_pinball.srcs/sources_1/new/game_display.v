@@ -18,13 +18,12 @@ module game_display (
   output reg [3:0] g,
   output reg [3:0] b,
   output wire pclk_mirror,
-  input wire [7:0] write_data,
-  output reg [7:0] read_data,
-  input wire [2:0] address,
-  input wire write,
+  
+  //input wire write,
   output reg irq
   );
 
+    
   // Converts 100 MHz clk into 40 MHz pclk.
   // This uses a vendor specific primitive
   // called MMCME2, for frequency synthesis.
@@ -279,39 +278,52 @@ module game_display (
   reg go = 0;
   wire busy;
 
-  always @*
-  begin
-    case (address)
-      3'd0: read_data = stax;
-      3'd1: read_data = stay;
-      3'd2: read_data = endx;
-      3'd3: read_data = endy;
-      3'd4: read_data = {7'b0, busy};
-      3'd5: read_data = {4'b0, beam};
-      3'd6: read_data = {6'b0, mode};
-      3'd7: read_data = prng[8:1];
-      default: read_data = 8'bx;
-    endcase
-  end
+//  always @*
+//  begin
+//    case (address)
+//      3'd0: read_data = stax;
+//      3'd1: read_data = stay;
+//      3'd2: read_data = endx;
+//      3'd3: read_data = endy;
+//      3'd4: read_data = {7'b0, busy};
+//      3'd5: read_data = {4'b0, beam};
+//      3'd6: read_data = {6'b0, mode};
+//      3'd7: read_data = prng[8:1];
+//      default: read_data = 8'bx;
+//    endcase
+//  end
 
-  always @(posedge pclk)
-  begin
-    go <= write && (address == 3'd4) && write_data[0];
-    prng <= {prng[16:1], (prng[17] ^ prng[14])};
-    if (write)
-    begin
-      case (address)
-        3'd0: stax <= write_data;
-        3'd1: stay <= write_data;
-        3'd2: endx <= write_data;
-        3'd3: endy <= write_data;
-        3'd5: beam <= write_data[3:0];
-        3'd6: mode <= write_data[1:0];
-      endcase 
-    end
-  end
+//  always @(posedge pclk)
+//  begin
+//    go <= write && (address == 3'd4) && write_data[0];
+//    prng <= {prng[16:1], (prng[17] ^ prng[14])};
+//    if (write)
+//    begin
+//      case (address)
+//        3'd0: stax <= write_data;
+//        3'd1: stay <= write_data;
+//        3'd2: endx <= write_data;
+//        3'd3: endy <= write_data;
+//        3'd5: beam <= write_data[3:0];
+//        3'd6: mode <= write_data[1:0];
+//      endcase 
+//    end
+//  end
 
   assign framebuffer_mode = mode;
+ 
+ board boardDisplay (
+    .clk(clk),
+    .pclk_mirror(pclk_mirror),
+    .stax(startx),
+    .stary(starty),
+    .endx(endx),
+    .endy(endy),
+    .mode(mode),
+    .beam(beam),
+    .go(go),
+    .busy(busy)
+    );
 
   // This module draws lines from the start
   // coordinate to the end coordinate.  After
@@ -345,12 +357,5 @@ module game_display (
 
   assign linedraw_pixel_in = beam;
 
-    
-
-  board boardDisplay (
-  .clk(clk),
-  .pclk(pclk),
-  .write_data(write_data),
-  .address(address)
-  );
+   
 endmodule
