@@ -72,18 +72,18 @@ begin
 					4'h1: {startx, starty, endx, endy, beam, mode} <= {8'd004, 8'd252, 8'd252, 8'd252, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD};//button horizantal line
 					4'h2: {startx, starty, endx, endy, beam, mode} <= {8'd252, 8'd004, 8'd252, 8'd252, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //Right vertical line
 					4'h3: {startx, starty, endx, endy, beam, mode} <= {8'd004, 8'd004, 8'd004, 8'd252, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //left vertical line
-					4'h4: {startx, starty, endx, endy, beam, mode} <= {8'd222, 8'd004, 8'd251, 8'd041, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //top right diagonal line
+					4'h4: {startx, starty, endx, endy, beam, mode} <= {8'd214, 8'd004, 8'd252, 8'd042, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //top right diagonal line
 					//triangle in the middle
-					4'h5: {startx, starty, endx, endy, beam, mode} <= {8'd086, 8'd120, 8'd127, 8'd096, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //86, 120, 127, 96
-					4'h6: {startx, starty, endx, endy, beam, mode} <= {8'd127, 8'd096, 8'd168, 8'd120, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //127, 96, 168, 120
+					4'h5: {startx, starty, endx, endy, beam, mode} <= {8'd101, 8'd120, 8'd128, 8'd093, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //86, 120, 127, 96
+					4'h6: {startx, starty, endx, endy, beam, mode} <= {8'd128, 8'd093, 8'd155, 8'd120, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //127, 96, 168, 120
 					//left paddel extention
 					4'h7: {startx, starty, endx, endy, beam, mode} <= {8'd004, 8'd210, 8'd064, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //4, 210, 64, 210
-					4'h8: {startx, starty, endx, endy, beam, mode} <= {8'd004, 8'd154, 8'd064, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //4, 154, 64, 210
-                    4'h9: {startx, starty, endx, endy, beam, mode} <= {8'd064, 8'd210, 8'd090, 8'd230, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //64, 210, 90, 230
+					4'h8: {startx, starty, endx, endy, beam, mode} <= {8'd004, 8'd150, 8'd064, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //4, 154, 64, 210
+                    4'h9: {startx, starty, endx, endy, beam, mode} <= {8'd064, 8'd210, 8'd095, 8'd241, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //64, 210, 90, 230
                     //right paddel extention
-					4'hA: {startx, starty, endx, endy, beam, mode} <= {8'd252, 8'd210, 8'd193, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //252, 210, 193, 210
-					4'hB: {startx, starty, endx, endy, beam, mode} <= {8'd252, 8'd154, 8'd193, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //252, 154, 193, 210
-					4'hC: {startx, starty, endx, endy, beam, mode} <= {8'd193, 8'd210, 8'd167, 8'd230, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //193, 210, 167, 230
+					4'hA: {startx, starty, endx, endy, beam, mode} <= {8'd252, 8'd210, 8'd192, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //252, 210, 193, 210
+					4'hB: {startx, starty, endx, endy, beam, mode} <= {8'd192, 8'd210, 8'd252, 8'd150, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //252, 154, 193, 210
+					4'hC: {startx, starty, endx, endy, beam, mode} <= {8'd161, 8'd241, 8'd192, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //193, 210, 167, 230
 					4'hD: ; //
 					4'hE: ; //
 					4'hF: ; // should never get here
