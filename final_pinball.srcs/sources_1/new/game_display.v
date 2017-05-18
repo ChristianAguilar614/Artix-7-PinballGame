@@ -88,14 +88,15 @@ vga_timing my_timing (
 
 // Create a slower clock for the game movements;
 
-reg [7:0] frame_counter = 0;
+reg [2:0] frame_counter = 0;
 wire gameclk;
 
-assign gameclk = (frame_counter == 5); // clk every 6 (0-5) frames, or 10 FPS
+assign gameclk = (frame_counter == 0); // clk every 6 (0-5) frames, or 10 FPS
 
 always @(posedge vsync)
 begin
-	frame_counter <= frame_counter + 1;
+	if (frame_counter == 6) frame_counter <= 0;
+	else frame_counter <= frame_counter + 1;
 end
 
 // We want to put the 256x256 framebuffer into
