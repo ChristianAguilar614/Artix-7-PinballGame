@@ -355,7 +355,6 @@ wire [7:0] startScreen_endx;
 
 StartScreen StartGame (
 	.pclk(pclk),
-    .gameclk(gameclk),
 	.startx(startScreen_startx),
 	.starty(startScreen_starty),
 	.endx(startScreen_endx),
@@ -374,7 +373,6 @@ wire [7:0] endScreen_endx;
 
 EndScreen GameOver (
 	.pclk(pclk),
-    .gameclk(gameclk),
 	.startx(endScreen_startx),
 	.starty(endScreen_starty),
 	.endx(endScreen_endx),
@@ -395,28 +393,34 @@ begin
 					endy <= startScreen_endy;
 					endx <= startScreen_endx;
 				end
-		4'h1: begin
-				while(gameState == 4'h1) begin
-					stax <= game_startx;
-					stay <= game_starty;
-					endy <= game_endy;
-					endx <= game_endx;
-					end
-				end
+//		4'h1: begin
+//				while(gameState == 4'h1) begin
+//					stax <= game_startx;
+//					stay <= game_starty;
+//					endy <= game_endy;
+//					endx <= game_endx;
+//					end
+//				end
 		4'h2: begin
-				while(gameState == 4'h2) begin
-					stax = endScreen_startx;
+					stax <= endScreen_startx;
 					stay <= endScreen_starty;
 					endy <= endScreen_endy;
 					endx <= endScreen_endx;
-					if(!control[2]) gameState = 4'h2;
-					else gameState = 4'h0;
-					end
 				end
 		4'h3: ;
 		default: ;
 	endcase  
-	if (!control[2]) gameState = 4'h0; //stay in start screen
-	else gameState = 4'h1;
+	
+	//set controls for Start Screen
+	if(gameState == 4'h1) begin
+		if (!control[2]) gameState = 4'h0; //stay in start screen
+		else gameState = 4'h2;
+	end
+	
+	//set controlls for End Screen
+	if(gameState == 4'h2) begin
+		if(!control[2]) gameState = 4'h2;
+		else gameState = 4'h0;
+	end
 end
 endmodule
