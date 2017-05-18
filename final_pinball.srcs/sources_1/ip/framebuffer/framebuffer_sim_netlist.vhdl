@@ -1,10 +1,10 @@
 -- Copyright 1986-2017 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
 -- Tool Version: Vivado v.2017.1 (win64) Build 1846317 Fri Apr 14 18:55:03 MDT 2017
--- Date        : Wed May 17 03:52:20 2017
--- Host        : WinbookPro running 64-bit major release  (build 9200)
--- Command     : write_vhdl -force -mode funcsim -rename_top framebuffer -prefix
---               framebuffer_ framebuffer_sim_netlist.vhdl
+-- Date        : Wed May 17 17:46:30 2017
+-- Host        : CHRISTIANAG1660 running 64-bit major release  (build 9200)
+-- Command     : write_vhdl -force -mode funcsim
+--               Z:/Cloud/Github/Pinball/Artix-7-PinballGame/final_pinball.srcs/sources_1/ip/framebuffer/framebuffer_sim_netlist.vhdl
 -- Design      : framebuffer
 -- Purpose     : This VHDL netlist is a functional simulation representation of the design and should not be modified or
 --               synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -20,6 +20,8 @@ entity framebuffer_blk_mem_gen_mux is
     addra : in STD_LOGIC_VECTOR ( 0 to 0 );
     clka : in STD_LOGIC
   );
+  attribute ORIG_REF_NAME : string;
+  attribute ORIG_REF_NAME of framebuffer_blk_mem_gen_mux : entity is "blk_mem_gen_mux";
 end framebuffer_blk_mem_gen_mux;
 
 architecture STRUCTURE of framebuffer_blk_mem_gen_mux is
@@ -180,6 +182,8 @@ entity framebuffer_blk_mem_gen_prim_wrapper is
     wea : in STD_LOGIC_VECTOR ( 0 to 0 );
     web : in STD_LOGIC_VECTOR ( 0 to 0 )
   );
+  attribute ORIG_REF_NAME : string;
+  attribute ORIG_REF_NAME of framebuffer_blk_mem_gen_prim_wrapper : entity is "blk_mem_gen_prim_wrapper";
 end framebuffer_blk_mem_gen_prim_wrapper;
 
 architecture STRUCTURE of framebuffer_blk_mem_gen_prim_wrapper is
@@ -2346,6 +2350,8 @@ entity framebuffer_blk_mem_gen_prim_width is
     wea : in STD_LOGIC_VECTOR ( 0 to 0 );
     web : in STD_LOGIC_VECTOR ( 0 to 0 )
   );
+  attribute ORIG_REF_NAME : string;
+  attribute ORIG_REF_NAME of framebuffer_blk_mem_gen_prim_width : entity is "blk_mem_gen_prim_width";
 end framebuffer_blk_mem_gen_prim_width;
 
 architecture STRUCTURE of framebuffer_blk_mem_gen_prim_width is
@@ -2654,6 +2660,8 @@ entity framebuffer_blk_mem_gen_generic_cstr is
     wea : in STD_LOGIC_VECTOR ( 0 to 0 );
     web : in STD_LOGIC_VECTOR ( 0 to 0 )
   );
+  attribute ORIG_REF_NAME : string;
+  attribute ORIG_REF_NAME of framebuffer_blk_mem_gen_generic_cstr : entity is "blk_mem_gen_generic_cstr";
 end framebuffer_blk_mem_gen_generic_cstr;
 
 architecture STRUCTURE of framebuffer_blk_mem_gen_generic_cstr is
@@ -2851,6 +2859,8 @@ entity framebuffer_blk_mem_gen_top is
     wea : in STD_LOGIC_VECTOR ( 0 to 0 );
     web : in STD_LOGIC_VECTOR ( 0 to 0 )
   );
+  attribute ORIG_REF_NAME : string;
+  attribute ORIG_REF_NAME of framebuffer_blk_mem_gen_top : entity is "blk_mem_gen_top";
 end framebuffer_blk_mem_gen_top;
 
 architecture STRUCTURE of framebuffer_blk_mem_gen_top is
@@ -2884,6 +2894,8 @@ entity framebuffer_blk_mem_gen_v8_3_6_synth is
     wea : in STD_LOGIC_VECTOR ( 0 to 0 );
     web : in STD_LOGIC_VECTOR ( 0 to 0 )
   );
+  attribute ORIG_REF_NAME : string;
+  attribute ORIG_REF_NAME of framebuffer_blk_mem_gen_v8_3_6_synth : entity is "blk_mem_gen_v8_3_6_synth";
 end framebuffer_blk_mem_gen_v8_3_6_synth;
 
 architecture STRUCTURE of framebuffer_blk_mem_gen_v8_3_6_synth is
@@ -3117,6 +3129,8 @@ entity framebuffer_blk_mem_gen_v8_3_6 is
   attribute C_WRITE_WIDTH_B of framebuffer_blk_mem_gen_v8_3_6 : entity is 8;
   attribute C_XDEVICEFAMILY : string;
   attribute C_XDEVICEFAMILY of framebuffer_blk_mem_gen_v8_3_6 : entity is "artix7";
+  attribute ORIG_REF_NAME : string;
+  attribute ORIG_REF_NAME of framebuffer_blk_mem_gen_v8_3_6 : entity is "blk_mem_gen_v8_3_6";
   attribute downgradeipidentifiedwarnings : string;
   attribute downgradeipidentifiedwarnings of framebuffer_blk_mem_gen_v8_3_6 : entity is "yes";
 end framebuffer_blk_mem_gen_v8_3_6;

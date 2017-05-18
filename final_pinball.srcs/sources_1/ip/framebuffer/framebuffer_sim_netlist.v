@@ -1,10 +1,10 @@
 // Copyright 1986-2017 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2017.1 (win64) Build 1846317 Fri Apr 14 18:55:03 MDT 2017
-// Date        : Wed May 17 03:52:20 2017
-// Host        : WinbookPro running 64-bit major release  (build 9200)
-// Command     : write_verilog -force -mode funcsim -rename_top framebuffer -prefix
-//               framebuffer_ framebuffer_sim_netlist.v
+// Date        : Wed May 17 17:46:30 2017
+// Host        : CHRISTIANAG1660 running 64-bit major release  (build 9200)
+// Command     : write_verilog -force -mode funcsim
+//               Z:/Cloud/Github/Pinball/Artix-7-PinballGame/final_pinball.srcs/sources_1/ip/framebuffer/framebuffer_sim_netlist.v
 // Design      : framebuffer
 // Purpose     : This verilog netlist is a functional simulation representation of the design and should not be modified
 //               or synthesized. This netlist cannot be used for SDF annotated simulation.
@@ -206,6 +206,7 @@ module framebuffer
         .web(web));
 endmodule
 
+(* ORIG_REF_NAME = "blk_mem_gen_generic_cstr" *) 
 module framebuffer_blk_mem_gen_generic_cstr
    (douta,
     doutb,
@@ -372,6 +373,7 @@ module framebuffer_blk_mem_gen_generic_cstr
         .web(web));
 endmodule
 
+(* ORIG_REF_NAME = "blk_mem_gen_mux" *) 
 module framebuffer_blk_mem_gen_mux
    (sel_pipe,
     addra,
@@ -506,6 +508,7 @@ module framebuffer_blk_mem_gen_mux__parameterized0
         .R(1'b0));
 endmodule
 
+(* ORIG_REF_NAME = "blk_mem_gen_prim_width" *) 
 module framebuffer_blk_mem_gen_prim_width
    (DOADO,
     \doutb[4] ,
@@ -913,6 +916,7 @@ module framebuffer_blk_mem_gen_prim_width__parameterized6
         .web(web));
 endmodule
 
+(* ORIG_REF_NAME = "blk_mem_gen_prim_wrapper" *) 
 module framebuffer_blk_mem_gen_prim_wrapper
    (DOADO,
     \doutb[4] ,
@@ -3026,6 +3030,7 @@ module framebuffer_blk_mem_gen_prim_wrapper__parameterized6
         .O(douta));
 endmodule
 
+(* ORIG_REF_NAME = "blk_mem_gen_top" *) 
 module framebuffer_blk_mem_gen_top
    (douta,
     doutb,
@@ -3092,7 +3097,7 @@ endmodule
 (* C_USE_URAM = "0" *) (* C_WEA_WIDTH = "1" *) (* C_WEB_WIDTH = "1" *) 
 (* C_WRITE_DEPTH_A = "65536" *) (* C_WRITE_DEPTH_B = "32768" *) (* C_WRITE_MODE_A = "READ_FIRST" *) 
 (* C_WRITE_MODE_B = "READ_FIRST" *) (* C_WRITE_WIDTH_A = "4" *) (* C_WRITE_WIDTH_B = "8" *) 
-(* C_XDEVICEFAMILY = "artix7" *) (* downgradeipidentifiedwarnings = "yes" *) 
+(* C_XDEVICEFAMILY = "artix7" *) (* ORIG_REF_NAME = "blk_mem_gen_v8_3_6" *) (* downgradeipidentifiedwarnings = "yes" *) 
 module framebuffer_blk_mem_gen_v8_3_6
    (clka,
     rsta,
@@ -3308,6 +3313,7 @@ module framebuffer_blk_mem_gen_v8_3_6
         .web(web));
 endmodule
 
+(* ORIG_REF_NAME = "blk_mem_gen_v8_3_6_synth" *) 
 module framebuffer_blk_mem_gen_v8_3_6_synth
    (douta,
     doutb,

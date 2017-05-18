@@ -1,10 +1,10 @@
 -- Copyright 1986-2017 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
 -- Tool Version: Vivado v.2017.1 (win64) Build 1846317 Fri Apr 14 18:55:03 MDT 2017
--- Date        : Wed May 17 03:52:20 2017
--- Host        : WinbookPro running 64-bit major release  (build 9200)
--- Command     : write_vhdl -force -mode synth_stub -rename_top framebuffer -prefix
---               framebuffer_ framebuffer_stub.vhdl
+-- Date        : Wed May 17 17:46:30 2017
+-- Host        : CHRISTIANAG1660 running 64-bit major release  (build 9200)
+-- Command     : write_vhdl -force -mode synth_stub
+--               Z:/Cloud/Github/Pinball/Artix-7-PinballGame/final_pinball.srcs/sources_1/ip/framebuffer/framebuffer_stub.vhdl
 -- Design      : framebuffer
 -- Purpose     : Stub declaration of top-level module interface
 -- Device      : xc7a35tcpg236-1

@@ -14,7 +14,6 @@
 
 module board(
 	input wire pclk,
-	input wire gameclk,
 	output reg [7:0] startx = 0,
 	output reg [7:0] starty = 0,
 	output reg [7:0] endx = 0,
@@ -23,8 +22,8 @@ module board(
 	output reg [3:0] beam = 0,
 	input wire busy,
 	output reg go = 0,
-	input wire ballX,
-	input wire ballY,
+	input wire ballX, //top left x
+	input wire ballY, // top left y
 	input wire ballSize
 );
  
@@ -102,6 +101,6 @@ begin
 	end
 	else go <= 0;
 end
-    
+   
 endmodule
 

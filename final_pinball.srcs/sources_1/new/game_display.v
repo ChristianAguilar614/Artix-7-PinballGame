@@ -288,7 +288,6 @@ assign framebuffer_mode = mode;
 
 board boardDisplay (
     .pclk(pclk),
-    .gameclk(gameclk),
 	.startx(stax),
 	.starty(stay),
 	.endx(endx),
