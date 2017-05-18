@@ -17,6 +17,7 @@ module game_display (
 	output reg [3:0] r,
 	output reg [3:0] g,
 	output reg [3:0] b,
+	input wire [2:0] control,
 	//output wire pclk_mirror,
   
 	//input wire write,
@@ -299,7 +300,8 @@ board boardDisplay (
 	.busy(busy),
 	.ballX(ballTLX),
 	.ballY(ballTLY),
-	.ballSize(ball_size)
+	.ballSize(ball_size),
+	.control(control)
 );
 
 // ********************************************
