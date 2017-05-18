@@ -19,7 +19,7 @@ localparam [1:0] gravity_magnitude = 2'd1;
 localparam [3:0] gravity_rate = 4'd1;
 
 module ball(
-	input wire vsync,
+	input wire pclk,
     input wire gameclk,
     output reg [7:0] posx = initialx, // just store single corner
     output reg [7:0] posy = initialy, // others can be calculated

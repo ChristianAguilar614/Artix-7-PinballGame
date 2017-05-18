@@ -270,7 +270,7 @@ wire [7:0] ballTLY;
 wire [3:0] ball_size;
 
 ball gameBall(
-.vsync(vsync), //was pclk
+.pclk(pclk), 
 .gameclk(gameclk),
 .posx(ballTLX),
 .posy(ballTLY),
