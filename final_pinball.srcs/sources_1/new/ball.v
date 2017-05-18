@@ -10,14 +10,14 @@
 // Declare the module and its ports. This is
 // using Verilog-2001 syntax.
 //////////////////////////////////////////////////////////////////////////////////
-localparam [3:0] max_velo = 3'd3;
-localparam [1:0] gravity = 3'd1;
+localparam [3:0] max_velo = 4'd3;
+localparam [1:0] gravity = 2'd1;
 
 
 module ball(
     input wire gameclk,
-    output reg [7:0] topleft_x, // just store single corner
-    output reg [7:0] topleft_y, // others can be calculated
+    output reg [7:0] topleft_x = 8'd230, // just store single corner
+    output reg [7:0] topleft_y = 8'd100, // others can be calculated
     output wire [3:0] size
     );
     

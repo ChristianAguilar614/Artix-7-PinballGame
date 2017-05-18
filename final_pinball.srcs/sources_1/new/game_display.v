@@ -264,8 +264,8 @@ end
 
 
 //*************** Ball Instantiation *********
-wire [7:0] ballTLX = 8'd100;
-wire [7:0] ballTLY = 8'd100;
+wire [7:0] ballTLX;
+wire [7:0] ballTLY;
 wire [3:0] ball_size;
 
 ball gameBall(

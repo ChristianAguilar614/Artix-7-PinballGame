@@ -23,36 +23,27 @@ module board(
 	output reg [3:0] beam = 0,
 	input wire busy,
 	output reg go = 0,
-	input wire ballX, //top left x
-	input wire ballY, // top left y
-	input wire ballSize,
+	input wire [7:0] ballX, //top left x
+	input wire [7:0] ballY, // top left y
+	input wire [3:0]ballSize,
 	input wire [2:0] control
 );
 
 
 //local variables indicating various registers and modes
-localparam [2:0] REG_ADDR_STAX = 3'd0;
-localparam [2:0] REG_ADDR_STAY = 3'd1;
-localparam [2:0] REG_ADDR_ENDX = 3'd2;
-localparam [2:0] REG_ADDR_ENDY = 3'd3;
-localparam [2:0] REG_ADDR_BUSY = 3'd4;
-localparam [2:0] REG_ADDR_BEAM = 3'd5;
-localparam [2:0] REG_ADDR_MODE = 3'd6;
-localparam [2:0] REG_ADDR_PRNG = 3'd7;
-
-localparam [3:0] REG_DATA_BUSY_GO = 8'h01;
-localparam [3:0] REG_DATA_BEAM_HI = 8'h0f;
-localparam [3:0] REG_DATA_BEAM_MD = 8'h07;
-localparam [3:0] REG_DATA_BEAM_LO = 8'h03;
-localparam [1:0] REG_DATA_MODE_HLD = 8'h0;
-localparam [1:0] REG_DATA_MODE_CLR = 8'h1;
-localparam [1:0] REG_DATA_MODE_LIN = 8'h2;
-localparam [1:0] REG_DATA_MODE_EXP = 8'h3;
+localparam [3:0] REG_DATA_BUSY_GO = 4'h01;
+localparam [3:0] REG_DATA_BEAM_HI = 4'h0f;
+localparam [3:0] REG_DATA_BEAM_MD = 4'h07;
+localparam [3:0] REG_DATA_BEAM_LO = 4'h03;
+localparam [1:0] REG_DATA_MODE_HLD = 2'h0;
+localparam [1:0] REG_DATA_MODE_CLR = 2'h1;
+localparam [1:0] REG_DATA_MODE_LIN = 2'h2;
+localparam [1:0] REG_DATA_MODE_EXP = 2'h3;
 
 
 wire setup;
 reg [3:0] setup_state = 0;
-reg [2:0] ballDraw = 0;
+reg [3:0] dynamDraw = 0;
 assign setup = !(setup_state == 4'hF);
 
 always @(posedge pclk)
@@ -76,11 +67,11 @@ begin
 					//left paddel extention
 					4'h7: {startx, starty, endx, endy, beam, mode} <= {8'd004, 8'd210, 8'd064, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //4, 210, 64, 210
 					4'h8: {startx, starty, endx, endy, beam, mode} <= {8'd004, 8'd150, 8'd064, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //4, 154, 64, 210
-                    4'h9: {startx, starty, endx, endy, beam, mode} <= {8'd064, 8'd210, 8'd095, 8'd241, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //64, 210, 90, 230
+                    4'h9: ;//{startx, starty, endx, endy, beam, mode} <= {8'd064, 8'd210, 8'd095, 8'd241, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; // paddle left
                     //right paddel extention
-					4'hA: {startx, starty, endx, endy, beam, mode} <= {8'd252, 8'd210, 8'd192, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //252, 210, 193, 210
-					4'hB: {startx, starty, endx, endy, beam, mode} <= {8'd192, 8'd210, 8'd252, 8'd150, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //252, 154, 193, 210
-					4'hC: {startx, starty, endx, endy, beam, mode} <= {8'd161, 8'd241, 8'd192, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //193, 210, 167, 230
+					4'hA: {startx, starty, endx, endy, beam, mode} <= {8'd252, 8'd210, 8'd192, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; 
+					4'hB: {startx, starty, endx, endy, beam, mode} <= {8'd192, 8'd210, 8'd252, 8'd150, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD};
+					4'hC: ;//{startx, starty, endx, endy, beam, mode} <= {8'd161, 8'd241, 8'd192, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD};  // paddle right
 					4'hD: ; //
 					4'hE: ; //
 					4'hF: ; // should never get here
@@ -94,18 +85,33 @@ begin
         end
         else // else in normal running mode
         begin
+        	if (!go) // if a go pulse is not in progress
+        	begin
             // Pull from ball and levers
-				case (ballDraw)
-					1'h0: {startx, starty, endx, endy, beam, mode} <= {ballX, ballY, ballX-ballSize, ballY, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //top line
-					1'h1: {startx, starty, endx, endy, beam, mode} <= {ballX-ballSize, ballY, ballX-ballSize, ballY-ballSize, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //right line
-					1'h2: {startx, starty, endx, endy, beam, mode} <= {ballX, ballY-ballSize, ballX-ballSize, ballY-ballSize, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //bot line
-					1'h3: {startx, starty, endx, endy, beam, mode} <= {ballX, ballY, ballX, ballY-ballSize, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //left line
+				case (dynamDraw)
+					// ball
+					1'h0: {startx, starty, endx, endy, beam, mode} <= {ballX, ballY, ballX-ballSize, ballY, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //top line
+					1'h1: {startx, starty, endx, endy, beam, mode} <= {ballX-ballSize, ballY, ballX-ballSize, ballY-ballSize, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //right line
+					1'h2: {startx, starty, endx, endy, beam, mode} <= {ballX, ballY-ballSize, ballX-ballSize, ballY-ballSize, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //bot line
+					1'h3: {startx, starty, endx, endy, beam, mode} <= {ballX, ballY, ballX, ballY-ballSize, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //left line
+					// levers
+					1'h4:
+					begin
+						if (control[0]) {startx, starty, endx, endy, beam, mode} <= {8'd064, 8'd210, 8'd106, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; // paddle left
+						else {startx, starty, endx, endy, beam, mode} <= {8'd064, 8'd210, 8'd095, 8'd241, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; // paddle left
+					end
+					1'h5:
+					begin
+						if (control[1]) {startx, starty, endx, endy, beam, mode} <= {8'd150, 8'd210, 8'd192, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD};  // paddle right up
+						else {startx, starty, endx, endy, beam, mode} <= {8'd161, 8'd241, 8'd192, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD};  // paddle right down
+					end
 					default: ;
 				endcase
-				ballDraw <= ballDraw + 1;
-				if (ballDraw == 1'h3) begin  
-					ballDraw = 0;
-				end
+				dynamDraw <= dynamDraw + 1;
+				go <= 1;
+				
+        	end
+        	else go <= 0; // else end the go pulse
         end
 	end
 	else go <= 0;

@@ -48,9 +48,12 @@ set_property CFGBVS VCCO [current_design]
 set_property CONFIG_VOLTAGE 3.3 [current_design]
 
 # Constraints for controls
-set_property PACKAGE_PIN W19 [get_ports {control[0]}] // left
+# left
+set_property PACKAGE_PIN W19 [get_ports {control[0]}] 
 set_property IOSTANDARD LVCMOS33 [get_ports {control[0]}]
-set_property PACKAGE_PIN T17 [get_ports {control[1]}] // right
+# right
+set_property PACKAGE_PIN T17 [get_ports {control[1]}] 
 set_property IOSTANDARD LVCMOS33 [get_ports {control[1]}]
-set_property PACKAGE_PIN U18 [get_ports {control[2]}] // center
+# center
+set_property PACKAGE_PIN U18 [get_ports {control[2]}] 
 set_property IOSTANDARD LVCMOS33 [get_ports {control[2]}]
