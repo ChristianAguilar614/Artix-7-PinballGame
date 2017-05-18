@@ -14,6 +14,7 @@
 
 module board(
 	input wire pclk,
+	input wire gameclk,
 	output reg [7:0] startx = 0,
 	output reg [7:0] starty = 0,
 	output reg [7:0] endx = 0,
@@ -24,12 +25,9 @@ module board(
 	output reg go = 0,
 	input wire ballX, //top left x
 	input wire ballY, // top left y
-	input wire ballSize
+	input wire ballSize,
+	input wire [2:0] control
 );
- 
-//************* might be unessisary ******
-reg [17:1] prng = 1;
-//************* might be unessisary ******
 
 
 //local variables indicating various registers and modes
@@ -54,7 +52,7 @@ localparam [1:0] REG_DATA_MODE_EXP = 8'h3;
 
 wire setup;
 reg [3:0] setup_state = 0;
-
+reg [2:0] ballDraw = 0;
 assign setup = !(setup_state == 4'hF);
 
 always @(posedge pclk)
@@ -97,6 +95,17 @@ begin
         else // else in normal running mode
         begin
             // Pull from ball and levers
+				case (ballDraw)
+					1'h0: {startx, starty, endx, endy, beam, mode} <= {ballX, ballY, ballX-ballSize, ballY, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //top line
+					1'h1: {startx, starty, endx, endy, beam, mode} <= {ballX-ballSize, ballY, ballX-ballSize, ballY-ballSize, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //right line
+					1'h2: {startx, starty, endx, endy, beam, mode} <= {ballX, ballY-ballSize, ballX-ballSize, ballY-ballSize, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //bot line
+					1'h3: {startx, starty, endx, endy, beam, mode} <= {ballX, ballY, ballX, ballY-ballSize, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //left line
+					default: ;
+				endcase
+				ballDraw <= ballDraw + 1;
+				if (ballDraw == 1'h3) begin  
+					ballDraw = 0;
+				end
         end
 	end
 	else go <= 0;

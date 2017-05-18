@@ -240,11 +240,11 @@ begin
 	else
 	begin
 		// Active display, top edge, make a yellow line.
-		if (vcount_delayed == 0) {r,g,b} <= 12'hf_f_0;
+		if (vcount_delayed == 0) {r,g,b} <= 12'h0_0_f;
 		// Active display, bottom edge, make a red line.
-		else if (vcount_delayed == 599) {r,g,b} <= 12'hf_0_0;
+		else if (vcount_delayed == 599) {r,g,b} <= 12'h0_0_f;
 		// Active display, left edge, make a green line.
-		else if (hcount_delayed == 0) {r,g,b} <= 12'h0_f_0;
+		else if (hcount_delayed == 0) {r,g,b} <= 12'h0_0_f;
 		// Active display, right edge, make a blue line.
 		else if (hcount_delayed == 799) {r,g,b} <= 12'h0_0_f;
 		// Active display, in framebuffer region.
@@ -254,7 +254,7 @@ begin
 			else {r,g,b} <= {3{framebuffer_pixelpair_out[3:0]}};        
 		end
 		// Active display, default color.
-		else {r,g,b} <= 12'h8_8_8;    
+		else {r,g,b} <= 12'h1_1_1;     ///8_8_8 previous value
 	end
 	// Vertical blanking irq.
 	irq <= vblnk_delayed && !vblnk_delayed_twice;
@@ -263,8 +263,8 @@ end
 
 
 //*************** Ball Instantiation *********
-wire [7:0] ballTLX;
-wire [7:0] ballTLY;
+wire [7:0] ballTLX = 8'd100;
+wire [7:0] ballTLY = 8'd100;
 wire [3:0] ball_size;
 
 ball gameBall(
@@ -288,6 +288,7 @@ assign framebuffer_mode = mode;
 
 board boardDisplay (
     .pclk(pclk),
+    .gameclk(gameclk),
 	.startx(stax),
 	.starty(stay),
 	.endx(endx),
