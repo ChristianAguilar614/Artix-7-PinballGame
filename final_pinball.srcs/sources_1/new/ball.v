@@ -21,13 +21,52 @@ module ball(
     
 localparam [3:0] max_velo = 4'd8;
 localparam [1:0] gravity = 2'd1;
+
+/******************************* functions ******************/    
+
+
+function SITUATION;
+input topLX, topLY;
+begin
+	SITUATION = {CHECK_LEFT(topLX, topLY), CHECK_RIGHT(topLX, topLY), CHECK_UPPER(topLX, topLY), CHECK_LOWER(topLX, topLY)};
+end
+endfunction
+    
+function CHECK_UPPER;
+input topLX, topLY;
+begin
+	CHECK_UPPER = (topLY <= size);
+end
+endfunction
+
+function CHECK_LOWER;
+input topLX, topLY;
+begin
+	CHECK_LOWER = (topLY >= (8'd255 - size));
+end
+endfunction
+
+function CHECK_LEFT;
+input topLX, topLY;
+begin
+	CHECK_LEFT = (topLX <= size);
+end
+endfunction
+
+function CHECK_RIGHT;
+input topLX, topLY;
+begin
+	CHECK_RIGHT = ((topLX + size) >= (8'd255 - size));
+end
+endfunction
+
     
 // every pclk, if temp == 0
 // calculate next location, set it to temp
 // every gameclk set position = temp, temp = 0
 
-reg [7:0] tempx = 8'd230;
-reg [7:0] tempy = 8'd100;
+reg signed [7:0] tempx = 8'd230;
+reg signed [7:0] tempy = 8'd100;
 
 always @(posedge gameclk)
 begin
@@ -35,8 +74,9 @@ begin
 	topleft_y <= tempy;
 end
     
-reg [1:0] dx = 0; 
-reg [1:0] dy = 0;
+reg signed [4:0] dx = 0; 
+reg signed [4:0] dy = 0;
+
 
 // set size of ball ?
 assign size = 4'h8;
@@ -53,21 +93,22 @@ begin
     //max = 10 pixle movements per framerate
 	//move ball on entry	
 	case (step)
-	0:
-		begin
-		case(SITUATION(topleft_x,topleft_y))
-			4'b0001, 4'b0010 : dy <= ~(dy); 	//Bottom and Top only collision
-			4'b1000, 4'b0100 : dx <= ~(dx);	//Right and Left only collision
+	2'd0:
+	begin
+		if (topleft_y >= (8'd240 - size)) dy <= 0;
+		case({0,0,0,0})
+			4'b0001, 4'b0010 : dy <= -dy; 	//Bottom and Top only collision
+			4'b1000, 4'b0100 : dx <= -dx;	//Right and Left only collision
 			4'b1010, 4'b0110, 4'b0101, 4'b1001 : 
 			begin
-				dx <= ~(dx);
-				dy <= ~(dy);
+				dx <= -dx;
+				dy <= -dy;
 			end
 		endcase 
 		calc_tempx <= topleft_x;
 		calc_tempy <= topleft_y;
-		end
-	1:
+	end
+	2'd1:
 	begin
 		// Apply Air Resistance?
 		dx <= dx; //(dx > 0) ? dx - 1: ((dx < 0) ? dx + 1 : 0);
@@ -75,7 +116,7 @@ begin
 		// Apply Gravity (up to max fall speed)
 		dy <= (dy < max_velo) ? dy + gravity: dy;
 	end
-	2:
+	2'd2:
 	begin
 		// move ball
 		tempx <= calc_tempx + dx;
@@ -88,62 +129,5 @@ begin
 	
 end
     
-/******************************* functions ******************/    
-
-
-function SITUATION;
-input topLX, topLY;
-begin
-	SITUATION = {CHECK_LEFT(topleft_x, topleft_y), CHECK_RIGHT(topleft_x, topleft_y), CHECK_UPPER(topleft_x, topleft_y), CHECK_LOWER(topleft_x, topleft_y)};
-end
-endfunction
-	
-    
-function CHECK_UPPER;
-input topLX, topLY;
-begin
-	//check top of screen
-	if(topLY == 0) begin
-		CHECK_UPPER = 1'b1;
-	end
-	//assign CHECK w/ hit marker
-end
-endfunction
-
-
-
-function CHECK_LOWER;
-input topLX, topLY;
-begin
-	if((topLY - size) == 255) begin
-		CHECK_LOWER = 1'b1;
-	end
-	//assign CHECK w/ hit marker
-end
-endfunction
-
-
-
-function CHECK_LEFT;
-input topLX, topLY;
-begin
-	if(topLX == 0) begin
-		CHECK_LEFT = 1'b1;
-	end
-	//assign CHECK w/ hit marker
-end
-endfunction
-
-
-
-function CHECK_RIGHT;
-input topLX, topLY;
-begin
-	if((topLX - size) == 255) begin
-		CHECK_RIGHT = 1'b1;
-	end
-	//assign CHECK w/ hit marker
-end
-endfunction
 
 endmodule

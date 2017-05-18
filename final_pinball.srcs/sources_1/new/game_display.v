@@ -95,7 +95,7 @@ assign gameclk = (frame_counter == 0); // clk every 6 (0-5) frames, or 10 FPS
 
 always @(posedge vsync)
 begin
-	if (frame_counter == 6) frame_counter <= 0;
+	if (frame_counter == 2) frame_counter <= 0;
 	else frame_counter <= frame_counter + 1;
 end
 
@@ -280,27 +280,21 @@ ball gameBall(
 
 //***************  Board setup ****************
 
-reg [7:0] stax, stay;
-reg [7:0] endx, endy;
+wire [7:0] stax, stay;
+wire [7:0] endx, endy;
 wire [3:0] beam;
 wire [1:0] mode;
 wire go;
 wire busy;
 
-wire [7:0] game_startx;
-wire [7:0] game_starty;
-wire [7:0] game_endy;
-wire [7:0] game_endx;
-
 assign framebuffer_mode = mode;
 
 board boardDisplay (
     .pclk(pclk),
-    .gameclk(gameclk),
-	.startx(game_startx),
-	.starty(game_starty),
-	.endx(game_endx),
-	.endy(game_endy),
+	.startx(stax),
+	.starty(stay),
+	.endx(endx),
+	.endy(endy),
 	.mode(mode),
 	.beam(beam),
 	.go(go),
@@ -346,82 +340,4 @@ linedraw my_linedraw (
 
 assign linedraw_pixel_in = beam;
    
-   
-/************** Start Screen Setup ********/  
-reg [1:0] gameState = 4'h0;
-wire [7:0] startScreen_startx;
-wire [7:0] startScreen_starty;
-wire [7:0] startScreen_endy;
-wire [7:0] startScreen_endx;
-
-StartScreen StartGame (
-	.pclk(pclk),
-	.startx(startScreen_startx),
-	.starty(startScreen_starty),
-	.endx(startScreen_endx),
-	.endy(startScreen_endy),
-	.mode(mode),
-	.beam(beam),
-	.go(go),
-	.busy(busy)
-);
-
-/************** Enc Game Screen Setup ********/  
-wire [7:0] endScreen_startx;
-wire [7:0] endScreen_starty;
-wire [7:0] endScreen_endy;
-wire [7:0] endScreen_endx;
-
-EndScreen GameOver (
-	.pclk(pclk),
-	.startx(endScreen_startx),
-	.starty(endScreen_starty),
-	.endx(endScreen_endx),
-	.endy(endScreen_endy),
-	.mode(mode),
-	.beam(beam),
-	.go(go),
-	.busy(busy)
-);
-
-
-always @(posedge pclk)
-begin
-	case(gameState)
-		4'h0: 	begin
-					stax <= startScreen_startx;
-					stay <= startScreen_starty;
-					endy <= startScreen_endy;
-					endx <= startScreen_endx;
-				end
-//		4'h1: begin
-//				while(gameState == 4'h1) begin
-//					stax <= game_startx;
-//					stay <= game_starty;
-//					endy <= game_endy;
-//					endx <= game_endx;
-//					end
-//				end
-		4'h2: begin
-					stax <= endScreen_startx;
-					stay <= endScreen_starty;
-					endy <= endScreen_endy;
-					endx <= endScreen_endx;
-				end
-		4'h3: ;
-		default: ;
-	endcase  
-	
-	//set controls for Start Screen
-	if(gameState == 4'h1) begin
-		if (!control[2]) gameState = 4'h0; //stay in start screen
-		else gameState = 4'h2;
-	end
-	
-	//set controlls for End Screen
-	if(gameState == 4'h2) begin
-		if(!control[2]) gameState = 4'h2;
-		else gameState = 4'h0;
-	end
-end
 endmodule
