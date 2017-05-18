@@ -13,6 +13,7 @@
 
 
 module board(
+	//input wire pclk,
 	input wire pclk,
 	output reg [7:0] startx = 0,
 	output reg [7:0] starty = 0,
@@ -39,10 +40,10 @@ localparam [1:0] REG_DATA_MODE_CLR = 2'h1;
 localparam [1:0] REG_DATA_MODE_LIN = 2'h2;
 localparam [1:0] REG_DATA_MODE_EXP = 2'h3;
 
-reg [1:0]gameState = 2'b00;
+reg [1:0]gameState = 2'b01;
 reg [4:0] draw_state = 4'b0000;
 
-always @(posedge pclk)
+always @(posedge pclk) //60 fps
 begin
     if (!busy) begin // if no job already running
    		if (!go) begin// if a go pulse is not in progress
@@ -189,7 +190,11 @@ begin
 
 		else gameState <= 2'b00; //stay in start screen
 	end
-	
+	//set controlls for 
+	if(gameState == 2'b01) begin
+			if(control[2]) gameState <= 2'b10;
+			else gameState <= 2'b01;
+		end
 	//set controlls for End Screen
 	if(gameState == 2'b10) begin
 		if(control[2]) gameState <= 2'b00;
