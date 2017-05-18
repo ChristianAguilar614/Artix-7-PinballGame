@@ -256,7 +256,7 @@ begin
 			else {r,g,b} <= {3{framebuffer_pixelpair_out[3:0]}};        
 		end
 		// Active display, default color.
-		else {r,g,b} <= 12'h1_1_1;     ///8_8_8 previous value
+		else {r,g,b} <= 12'h0_0_0;     ///8_8_8 previous value
 	end
 	// Vertical blanking irq.
 	irq <= vblnk_delayed && !vblnk_delayed_twice;
