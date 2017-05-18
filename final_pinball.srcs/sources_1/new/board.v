@@ -185,19 +185,14 @@ begin
 	
 	//set controls for Start Screen
 	if(gameState == 2'b00) begin
-		if (control[2]) begin 
-			gameState <= 2'b10; 
-			//{startx, starty, endx, endy, beam, mode} <= {8'd0, 8'd0, 8'd0, 8'd0, REG_DATA_BEAM_HI, REG_DATA_MODE_CLR};
-			end
+		if (control[2]) gameState <= 2'b01; 
+
 		else gameState <= 2'b00; //stay in start screen
 	end
 	
 	//set controlls for End Screen
 	if(gameState == 2'b10) begin
-		if(control[2]) begin
-			gameState <= 2'b00;
-			//{startx, starty, endx, endy, beam, mode} <= {8'd0, 8'd0, 8'd0, 8'd0, REG_DATA_BEAM_HI, REG_DATA_MODE_CLR};
-			end
+		if(control[2]) gameState <= 2'b00;
 		else gameState <= 2'b10;
 	end
 	
