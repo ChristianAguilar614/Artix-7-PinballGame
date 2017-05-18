@@ -272,9 +272,10 @@ wire [3:0] ball_size;
 ball gameBall(
 .vsync(vsync), //was pclk
 .gameclk(gameclk),
-.topleft_x(ballTLX),
-.topleft_y(ballTLY),
-.size(ball_size)
+.posx(ballTLX),
+.posy(ballTLY),
+.size(ball_size),
+.control(control)
 );
 // ********************************************
 

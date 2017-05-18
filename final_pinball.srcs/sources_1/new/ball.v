@@ -11,119 +11,186 @@
 // using Verilog-2001 syntax.
 //////////////////////////////////////////////////////////////////////////////////
 
+localparam [7:0] initialx = 8'd230;
+localparam [7:0] initialy = 8'd100;
+localparam signed [7:0] initialdy = 0;
+localparam [3:0] max_velo = 4'd6;
+localparam [1:0] gravity_magnitude = 2'd1;
+localparam [3:0] gravity_rate = 4'd1;
+
 module ball(
 	input wire vsync,
     input wire gameclk,
-    output reg [7:0] topleft_x = 8'd230, // just store single corner
-    output reg [7:0] topleft_y = 8'd100, // others can be calculated
-    output wire [3:0] size
+    output reg [7:0] posx = initialx, // just store single corner
+    output reg [7:0] posy = initialy, // others can be calculated
+    output wire [3:0] size,
+    input wire [2:0] control
     );
-    
-localparam [3:0] max_velo = 4'd1;
-localparam [1:0] gravity = 2'd1;
+
+wire reset;
+assign reset = control[2];
+
+// ****** OUTPUT ***********
+
+assign size = 4'h8;
+
+reg [7:0] newx = initialx;
+reg [7:0] newy = initialy;
+
+always @(posedge gameclk)
+begin
+	posx <= newx;
+	posy <= newy;
+end
+
+
+// ******* CALCULATIONS *******
+
+// Initial speed
+reg signed [7:0] dx = 1; 
+reg signed [7:0] dy = initialdy;
+
+// Storage registers
+reg [7:0] storex;
+reg [7:0] storey;
+
+// Status
+reg collision = 0;
+reg [3:0] situation = 0;
+
+// Counters
+
+reg [1:0] step = 0;
+reg [3:0] gravity_ctr = 0;
+
+
+always @(posedge pclk)
+begin
+	case(step)
+		2'd0: // save current position for calculations. Check current location for collision
+		begin
+			if (!reset)
+			begin
+				situation <= SITUATION(posx, posy);
+				storex <= posx;
+				storey <= posy;
+			end
+			else // Handle a reset
+			begin 
+				storex <= initialx;
+				storey <= initialy;
+				dx <= 0;
+				dy <= initialdy;
+				situation <= 4'b0000;
+			end
+			step <= step + 1;
+		end
+		2'd1: // React to collision, modify velocity accordingly
+		begin
+			// save current position
+			
+			case (situation) // left, right, top, bottom
+				4'b1000, 4'b0100:  // left, right
+				begin
+						
+					collision <= 1;
+				end
+				4'b0010, 4'b0001, 4'b1110, 4'b1101:  // top, bottom, odd case when both sides and top hit
+				begin
+					dy <= (!collision) ? dy * -1: dy;
+					collision <= 1;
+				end
+				4'b1010: // Left Top
+				begin
+					collision <= 1;
+				end
+				4'b1001: // Left Bottom
+				begin
+					collision <= 1;
+				end
+				4'b0110: // Right Top
+				begin
+					collision <= 1;
+				end
+				4'b0101: // Right Bottom
+				begin
+					collision <= 1;
+				end
+				
+				default: collision <= 0;
+					
+			endcase
+			
+				/*
+				if (posy < 20 || posy > 230)
+				begin
+					// only apply on first time collision is detected
+					dy <= (!collision) ? dy * -1: dy;
+					collision <= 1;
+				end
+				else collision <= 0; */
+				
+				// if posy > Blah do stuff
+				// (dy < 0) storey <= storey - (dy * -1): storey + dy;
+				// handles signed 
+			
+			step <= step + 1;
+		end
+		2'd2: // apply gravity
+		begin
+			if (gravity_ctr == gravity_rate)
+			begin // only accelerate if under max speed
+				// make sure to subract unsigned numbers only
+				if (dy < max_velo)
+				begin
+					dy <= (dy > 0) ? dy + gravity_magnitude : -1 * ((dy * -1) - gravity_magnitude);
+				end
+				else dy <= dy;
+				gravity_ctr <= 0;
+			end
+			else gravity_ctr <= gravity_ctr + 1;
+			
+			dx <= dx;
+			
+			step <= step + 1;
+		end
+		2'd3: // update location
+		begin
+			newx <= storex + dx;
+			newy <= storey + dy;
+			step <= 2'd0; // back to start
+		end
+		default: ;
+	endcase
+end
 
 /******************************* functions ******************/    
 
 
 function [3:0] SITUATION;
-input topLX, topLY;
+input topLX, topLY; 
 	SITUATION = {CHECK_LEFT(topLX, topLY), CHECK_RIGHT(topLX, topLY), CHECK_UPPER(topLX, topLY), CHECK_LOWER(topLX, topLY)};
 endfunction
     
-function CHECK_UPPER;
+function [0:0] CHECK_UPPER; // 0010
 input topLX, topLY;
-	CHECK_UPPER = (topLY <= size);
+	CHECK_UPPER = (topLY < 20);
 endfunction
 
-function CHECK_LOWER;
+function [0:0]CHECK_LOWER; // 0001
 input topLX, topLY;
-	CHECK_LOWER = (topLY >= (8'd255 - size));
+	CHECK_LOWER = (topLY > 230);
 endfunction
 
-function CHECK_LEFT;
+function [0:0] CHECK_LEFT; //1000
 input topLX, topLY;
 	CHECK_LEFT = (topLX <= size);
 endfunction
 
-function CHECK_RIGHT;
+function [0:0] CHECK_RIGHT; //0100
 input topLX, topLY;
 	CHECK_RIGHT = ((topLX + size) >= (8'd255 - size));
-endfunction
-
-    
-// every pclk, if temp == 0
-// calculate next location, set it to temp
-// every gameclk set position = temp, temp = 0
-
-reg signed [8:0] tempx = 8'd230;
-reg signed [8:0] tempy = 8'd100;
-
-always @(posedge gameclk)
-begin
-	topleft_x <= tempx;
-	topleft_y <= tempy;
-end
-    
-reg signed [8:0] dx = 4; 
-reg signed [8:0] dy = 4;
-
-
-// set size of ball ?
-assign size = 4'h8;
-
-reg [1:0] step = 0;
-
-reg signed [8:0] calc_tempx = 8'd230;
-reg signed [8:0] calc_tempy = 8'd100;
-
-
-always @(posedge vsync)
-begin
-    //sets the collision logic in anticipation of the maximum declared speed of ball
-    //max = 10 pixle movements per framerate
-	//move ball on entry	
-	case (step)
-	2'd0:
-	begin
-//		if (topleft_y >= (8'd240 - size)) dy <= -1;
-//		if (topleft_y <= (8'd10 + size)) dy <= -1;
-//		if (topleft_x >= (8'd240 - size)) dx <= -1;
-//		if (topleft_x <= (8'd10 + size)) dx <= -1;
-		
-		case( SITUATION( topleft_x, topleft_y ))
-			4'b0001, 4'b0010 : dy <= -1*dy; 	//Bottom and Top only collision
-			4'b1000, 4'b0100 : dx <= -1*dx;	//Right and Left only collision
-			4'b1010, 4'b0110, 4'b0101, 4'b1001 : 
-			begin
-				dx <= -dx;
-				dy <= -dy;
-			end
-		endcase 
-
-		calc_tempx <= topleft_x;
-		calc_tempy <= topleft_y;
-	end
-	2'd1:
-	begin
-		// Apply Air Resistance?
-		//dx <= dx; //(dx > 0) ? dx - 1: ((dx < 0) ? dx + 1 : 0);
-		 
-		// Apply Gravity (up to max fall speed)
-		dy <= (dy < max_velo) ? dy + gravity: dy;
-	end
-	2'd2:
-	begin
-		// move ball
-		tempx <= calc_tempx + dx;
-		tempy <= calc_tempy + dy;
-	end
-		
-	endcase
-	
-	step <= step + 1;
-	if(step > 2'd2) step = 0; //reset step
-	
-end
+	endfunction
     
 
 endmodule
