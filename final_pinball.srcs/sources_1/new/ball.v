@@ -15,15 +15,30 @@ localparam [1:0] gravity = 2'd1;
 
 
 module ball(
+	input wire pclk,
     input wire gameclk,
     output reg [7:0] topleft_x = 8'd230, // just store single corner
     output reg [7:0] topleft_y = 8'd100, // others can be calculated
     output wire [3:0] size
     );
     
+// every pclk, if temp == 0
+// calculate next location, set it to temp
+// every gameclk set position = temp, temp = 0
+
+reg [7:0] tempx = 8'd0;
+reg [7:0] tempy = 8'd0;
+
+always @(posedge gameclk)
+begin
+	topleft_x <= tempx;
+	topleft_y <= tempy;
+	tempx <= 0;
+	tempy <= 0;
+end
     
-reg [1:0] dx = 1; 
-reg [1:0] dy = 1;
+reg [1:0] dx = 0; 
+reg [1:0] dy = 0;
 
 // set size of ball ?
 assign size = 4'h4;
@@ -31,17 +46,18 @@ reg [3:0] count = 4'b0000;
 reg isLeft, isRight, isTop, isBot;
 reg [3:0] situations;
 
-always @(posedge gameclk)
+always @(posedge pclk)
 begin
-    
+    if ({tempx, tempy} == 0) // if update is necessary
+    begin
     //sets the collision logic in anticipation of the maximum declared speed of ball
     //max = 10 pixle movements per framerate
     case (count)
 		4'h0: 
 			begin 
 				//move ball on entry
-				 topleft_x = topleft_x + dx;
-				 topleft_y = topleft_y + dy;
+				 topleft_x <= topleft_x + dx;
+				 topleft_y <= topleft_y + dy;
 				 
 				 isLeft <= CHECK_LEFT(topleft_x, topleft_y);
 				 isRight <= CHECK_RIGHT(topleft_x, topleft_y);
@@ -307,7 +323,7 @@ begin
 	topleft_x <= topleft_x + dx;
 	topleft_y <= topleft_y + dy;
 	
-
+	end
 end
     
 /******************************* functions ******************/    

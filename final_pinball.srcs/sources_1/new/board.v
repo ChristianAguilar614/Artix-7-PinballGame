@@ -29,7 +29,6 @@ module board(
 	input wire [2:0] control
 );
 
-
 //local variables indicating various registers and modes
 localparam [3:0] REG_DATA_BUSY_GO = 4'h01;
 localparam [3:0] REG_DATA_BEAM_HI = 4'h0f;
@@ -90,17 +89,17 @@ begin
             // Pull from ball and levers
 				case (dynamDraw)
 					// ball
-					1'h0: {startx, starty, endx, endy, beam, mode} <= {ballX, ballY, ballX-ballSize, ballY, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //top line
-					1'h1: {startx, starty, endx, endy, beam, mode} <= {ballX-ballSize, ballY, ballX-ballSize, ballY-ballSize, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //right line
-					1'h2: {startx, starty, endx, endy, beam, mode} <= {ballX, ballY-ballSize, ballX-ballSize, ballY-ballSize, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //bot line
-					1'h3: {startx, starty, endx, endy, beam, mode} <= {ballX, ballY, ballX, ballY-ballSize, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //left line
+					4'h0: {startx, starty, endx, endy, beam, mode} <= {ballX, ballY, ballX+ballSize, ballY, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //top line
+					4'h1: {startx, starty, endx, endy, beam, mode} <= {ballX+ballSize, ballY, ballX+ballSize, ballY+ballSize, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //right line
+					4'h2: {startx, starty, endx, endy, beam, mode} <= {ballX, ballY+ballSize, ballX+ballSize, ballY+ballSize, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //bot line
+					4'h3: {startx, starty, endx, endy, beam, mode} <= {ballX, ballY, ballX, ballY+ballSize, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; //left line
 					// levers
-					1'h4:
+					4'h4:
 					begin
 						if (control[0]) {startx, starty, endx, endy, beam, mode} <= {8'd064, 8'd210, 8'd106, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; // paddle left
 						else {startx, starty, endx, endy, beam, mode} <= {8'd064, 8'd210, 8'd095, 8'd241, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD}; // paddle left
 					end
-					1'h5:
+					4'h5:
 					begin
 						if (control[1]) {startx, starty, endx, endy, beam, mode} <= {8'd150, 8'd210, 8'd192, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD};  // paddle right up
 						else {startx, starty, endx, endy, beam, mode} <= {8'd161, 8'd241, 8'd192, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_HLD};  // paddle right down

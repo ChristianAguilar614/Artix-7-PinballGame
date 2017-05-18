@@ -269,6 +269,7 @@ wire [7:0] ballTLY;
 wire [3:0] ball_size;
 
 ball gameBall(
+.pclk(pclk),
 .gameclk(gameclk),
 .topleft_x(ballTLX),
 .topleft_y(ballTLY),
