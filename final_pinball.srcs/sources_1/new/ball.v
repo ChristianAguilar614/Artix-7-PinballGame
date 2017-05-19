@@ -173,35 +173,176 @@ end
 
 /******************************* functions ******************/    
 
-assign situation[3] = (posx < 50); // left
-assign situation[2] = (posx + size > 200); // right
-assign situation[1] = (posy < 50); // top
-assign situation[0] = (posy + size > 200); // bottom
+assign situation[3] = CHECK_LEFT(posx,posy); //posx < 10); // left
+assign situation[2] = CHECK_RIGHT(posx,posy); //(posx > 240); // right
+assign situation[1] = CHECK_UPPER(posx,posy); //(posy < 10); // top
+assign situation[0] = CHECK_LOWER(posx,posy); //((posy > 240) || ((control[0] && posy > 210) && (posx > 64) && (posx < 106)) || ((control[1] && posy > 210) && (posx > 150) && (posx < 192))); // bottom  
 
 function [3:0] SITUATION;
 input topLX, topLY; 
-	SITUATION = {CHECK_LEFT(topLX), CHECK_RIGHT(topLX), CHECK_UPPER(topLY), CHECK_LOWER(topLY)};
+	SITUATION = {CHECK_LEFT(topLX,topLY), CHECK_RIGHT(topLX,topLY), CHECK_UPPER(topLX,topLY), CHECK_LOWER(topLX,topLY)};
 endfunction
     
 function [0:0] CHECK_UPPER; // 0010
-input topLY;
-	CHECK_UPPER = (topLY < 20);
+input [7:0] topLX, topLY;
+reg [8:0] x,y;
+begin
+	if(topLX > 210 && topLY < 42) begin
+	//check uper right diagnal obsticle
+		for(x = 210; x <= 250; x = x+1)begin
+			for(y = 4; y <= 42; y = y+1) begin
+				CHECK_UPPER = (topLX+size - x == topLY - y);
+//				if(CHECK_UPPER) begin
+//					x = 300; //numbers that are unreachable
+//					y = 300;
+//				end
+			end
+		end
+	end
+	
+	//check middle right diagnal obsticle
+	if(topLX > 101 && topLX < 128 && topLY > 94 && topLY < 120) begin
+		for(x = 128; x <= 155; x = x+1)begin
+			for(y = 93; y <= 120; y = y+1) begin
+				CHECK_UPPER = (topLX+size - x == topLY - y);
+//				if(CHECK_UPPER) begin
+//					x = 300; //numbers that are unreachable
+//					y = 300;
+//				end
+			end
+		end
+		
+		//check middle left diagnal obsticle
+		for(x = 101; x <= 128; x = x+1)begin
+			for(y = 93; y <= 120; y = y+1) begin
+				CHECK_UPPER = (topLX - x == topLY - y);
+//				if(CHECK_UPPER) begin
+//					x = 300; //numbers that are unreachable
+//					y = 300;
+//				end
+			end
+		end	
+	end
+	
+	CHECK_UPPER = (topLY < 20); //default top case
+end
 endfunction
 
 function [0:0]CHECK_LOWER; // 0001
-input topLY;
-	CHECK_LOWER = (topLY > 230);
+input [7:0] topLX, topLY;
+reg [8:0] x, y;
+begin
+	if(topLX < 64 && topLY-size > 150)begin
+		//check bottom left diagnal obsticle
+		for(x = 4; x <= 64; x = x+1)begin
+			for(y = 150; y <= 210; y = y+1) begin
+				CHECK_LOWER = (topLX - x == topLY-size - y);
+//				if(CHECK_LOWER) begin
+//					x = 300; //numbers that are unreachable
+//					y = 300;
+//				end
+			end
+		end	
+	end
+	
+	//check middle left diagnal obsticle
+	if(topLX > 101 && topLX < 128 && topLY-size > 94 && topLY-size < 120) begin
+		for(x = 101; x <= 128; x = x+1)begin
+			for(y = 93; y <= 120; y = y+1) begin
+				CHECK_LOWER = (topLX - x == topLY-size - y);
+//				if(CHECK_LOWER) begin
+//					x = 300; //numbers that are unreachable
+//					y = 300;
+//				end
+			end
+		end	
+	//check middle right diagnal obsticle
+		for(x = 128; x <= 155; x = x+1)begin
+			for(y = 93; y <= 120; y = y+1) begin
+				CHECK_LOWER = (topLX+size - x == topLY-size - y);
+//				if(CHECK_LOWER) begin
+//					x = 300; //numbers that are unreachable
+//					y = 300;
+//				end
+			end
+		end	
+	end
+	
+	//check bottom right diagnal obsticle
+	if(topLX > 192 && topLY-size > 150) begin
+		for(x = 192; x <= 252; x = x+1)begin
+			for(y = 150; y <= 210; y = y+1) begin
+				CHECK_LOWER = (topLX+size - x == topLY-size - y);
+//				if(CHECK_LOWER) begin
+//					x = 300; //numbers that are unreachable
+//					y = 300;
+//				end
+			end
+		end	
+	end
+	//((posy > 240) || 
+	CHECK_LOWER = (((control[0] && (topLY > (210 - size/2 - max_velo))) && (topLX > 64) && (topLX < 106)) || ((control[1] && (topLY > (210 - size/2 - max_velo)) && (topLX > 150) && (topLX < 192)))); // bottom  ;
+end
 endfunction
 
 function [0:0] CHECK_LEFT; //1000
-input topLX;
-	CHECK_LEFT = (topLX <= size);
+input [7:0] topLX, topLY;
+reg [8:0] x,y;
+begin
+	if(topLX < 64 && topLY > 150)begin
+		//check bottom left diagnal obsticle
+		for(x = 4; x < 64; x = x+1)begin
+			for(y = 150; y < 210; y = y+1) begin
+				CHECK_LEFT = (topLX - x == topLY-size - y);
+			end
+		end	
+	end
+	
+	//check middle right diagnal obsticle
+	if(topLX > 101 && topLX < 128 && topLY > 94 && topLY < 120) begin
+		for(x = 128; x < 155; x = x+1)begin
+			for(y = 93; y < 120; y = y+1) begin
+				CHECK_LEFT = (topLX - x == topLY-size - y);
+			end
+		end
+	end
+	CHECK_LEFT = (topLX <= size); //default condition
+end
 endfunction
 
 function [0:0] CHECK_RIGHT; //0100
-input topLX;
+input [7:0] topLX, topLY;
+reg [8:0] x,y;
+begin
+	//check bottom right diagnal obsticle
+	if(topLX > 192 && topLY > 150) begin
+		for(x = 192; x < 252; x = x+1)begin
+			for(y = 150; y < 210; y = y+1) begin
+				CHECK_RIGHT = (topLX+size - x == topLY-size - y);
+			end
+		end	
+	end
+	
+	if(topLX > 210 && topLY < 42) begin
+	//check uper right diagnal obsticle
+		for(x = 210; x < 250; x = x+1)begin
+			for(y = 4; y < 42; y = y+1) begin
+				CHECK_RIGHT = (topLX+size - x == topLY - y);
+			end
+		end
+	end
+	
+	//middle left obsticle
+	if(topLX > 101 && topLX < 128 && topLY > 94 && topLY < 120) begin
+		for(x = 101; x < 128; x = x+1)begin
+			for(y = 93; y < 120; y = y+1) begin
+				CHECK_RIGHT = (topLX+size - x == topLY-size - y);
+			end
+		end	
+	end	
 	CHECK_RIGHT = ((topLX + size) >= (8'd255 - size));
-	endfunction
+end
+endfunction
     
 
 endmodule
