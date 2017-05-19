@@ -15,7 +15,7 @@
 localparam [7:0] initialx = 8'd230;
 localparam [7:0] initialy = 8'd100;
 localparam signed [7:0] initialdy = -7;
-localparam signed [7:0] initialdx = 1;
+localparam signed [7:0] initialdx = -1;
 localparam signed [7:0] max_velo = 4'd8;
 localparam [1:0] gravity_magnitude = 2'd1;
 localparam [3:0] gravity_rate = 4'd5;
@@ -76,7 +76,10 @@ reg [7:0] storey;
 reg signed [7:0] storedx;
 reg signed [7:0] storedy;
 wire [7:0] abs_storedy = (storedy < 0) ? storedy * -1: storedy;
+wire [7:0] abs_storedx = (storedx < 0) ? storedx * -1: storedx;
 
+wire [7:0] abs_dy = (dy < 0) ? dy * -1: dy;
+wire [7:0] abs_dx = (dx < 0) ? dx * -1: dx;
 
 // Status
 reg collision = 0;
@@ -102,9 +105,13 @@ begin
 					4'b1000, 4'b0100, 4'b0011, 4'b1011, 4'b0111:  // left, right
 					begin
 						// if the collision has not been detected yet
-						// flip the velocity
+						// flip the velocity (losing energy)
 						// otherwise use old value 
-						storedx <= (!collision) ? dx * -1: storedx;
+						if  (!collision) 
+							// only lose energy if it doesnt make it stop
+							if (abs_dx > 4) storedx <= (dx < 0) ? (dx + 1) * -1: (dx - 1) * -1;
+							else storedx <= dx * -1;
+						else storedx <= storedx;
 						// if collision bit is on we know gravity has been applied
 						gravity_applied <= collision;
 						storedy <= dy;
@@ -113,18 +120,28 @@ begin
 					4'b0010, 4'b0001, 4'b1110, 4'b1101, 4'b1100:  // top, bottom, odd case when both sides and top hit
 					begin
 						if (!collision)
-						begin
-							storedy <= (paddle_hit) ? -1 * max_velo: dy * -1;
-						end
+							if (paddle_hit)  storedy <= -1 * max_velo;
+							else if (abs_dy > 4) storedy <= (dy < 0) ? (dy + 1) * -1: (dy - 1) * -1;
+							else storedy <=  dy * -1;
 						else storedy <= storedy;
 						gravity_applied <= collision;
 						storedx <= dx;
 						collision <= 1;
 					end
-					4'b1010, 4'b1001, 4'b0110, 4'b0101: // Corners
+					4'b1010, 4'b1001, 4'b0110, 4'b0101, 4'b1111: // Corners
 					begin
-						storedx <= (!collision) ? dy * -1: storedy;
-						storedy <= (!collision) ? dx * -1: storedx;
+						if (!collision) 
+							if (abs_dy > 4) storedx <= (dy < 0) ? (dy + 1) * -1: (dy - 1) * -1;
+							else storedx <= dy * -1;
+						else storedx <= storedy;
+						
+						
+						if (!collision)
+							if (paddle_hit)  storedy <= -1 * max_velo;
+							else if (abs_dx > 4) storedy <= (dx < 0) ? (dx + 1) * -1: (dx - 1) * -1;
+							else storedy <=  dx * -1;
+						else storedy <= storedx;
+												
 						gravity_applied <= collision;
 						collision <= 1;
 					end

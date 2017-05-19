@@ -39,16 +39,14 @@ localparam [1:0] REG_DATA_MODE_CLR = 2'h1;
 localparam [1:0] REG_DATA_MODE_LIN = 2'h2;
 localparam [1:0] REG_DATA_MODE_EXP = 2'h3;
 
-localparam [3:0] bs = 4'd8;
-
-reg [1:0]gameState = 2'b01;
+reg [1:0] gameState = 2'b01;
 reg [4:0] draw_state = 4'b0000;
+reg [3:0] state_toggle_ctr = 0;
 
-wire loss = (ballY + ballSize > 240);
+wire loss = (ballY >= `LPAD_DN_ENDY);
 
 always @(posedge pclk) //60 fps
 begin
-	if (loss) gameState <= 2'b10;
     if (!busy) begin // if no job already running
    		if (!go) begin// if a go pulse is not in progress
    			case (gameState)
@@ -194,22 +192,20 @@ begin
 	end
 	else go <= 0;
 	
-	//set controls for Start Screen
-	if(gameState == 2'b00) begin
-		if (control[2]) gameState <= 2'b01; 
-
-		else gameState <= 2'b00; //stay in start screen
-	end
-	//set controlls for 
-	if(gameState == 2'b01) begin
-			if(control[2]) gameState <= 2'b10;
-			else gameState <= 2'b01;
-		end
-	//set controlls for End Screen
-	if(gameState == 2'b10) begin
-		if(control[2]) gameState <= 2'b00;
-		else gameState <= 2'b10;
-	end
+	if (control[2]) 
+		if (state_toggle_ctr >= 4'hF)
+			begin
+			case (gameState)
+				2'b00: gameState <= 2'b01;
+				2'b01: gameState <= 2'b10;
+				2'b10: gameState <= 2'b00;
+				2'b11 :gameState <= 2'b00;
+				default: gameState <= 2'b00;
+			endcase
+			state_toggle_ctr <= 0;
+			end
+		else state_toggle_ctr <= state_toggle_ctr + 1;
+	
 	
 end
    
