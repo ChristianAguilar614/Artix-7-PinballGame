@@ -41,6 +41,7 @@ Instructions for doing that can be found [here](https://reference.digilentinc.co
  - Add colors
  - Utilize more screen space
  - UI improvements (score and ball lives)
+ - Add collision detection on lowered paddles
 
 [//]: # (These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax)
 
