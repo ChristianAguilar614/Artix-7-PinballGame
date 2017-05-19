@@ -304,7 +304,7 @@ begin
 	end
 	
 
-	else CHECK_LOWER = bumper_hit || ((topLY + bs) >= (255 - bs); // bottom  ;
+	else CHECK_LOWER = bumper_hit || ((topLY + bs) >= (255 - bs)); // bottom  ;
 end
 endfunction
 	
