@@ -43,7 +43,7 @@ localparam [1:0] REG_DATA_MODE_EXP = 2'h3;
 reg [1:0]gameState = 2'b01;
 reg [4:0] draw_state = 4'b0000;
 
-wire loss = (ballY > 240);
+wire loss = (ballY + ballSize > 240);
 
 always @(posedge pclk) //60 fps
 begin

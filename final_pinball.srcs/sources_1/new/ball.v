@@ -200,10 +200,10 @@ begin
 	CHECK_UPPER = 0;
 	
 	// Check Top Right Diagonal
-	if (topLX + size > 214 && topLY < 42) begin
+	if (topLX + size >= 214 && topLY <= 42) begin
 		y = 4;
 		for(x = 214; x <= 252; x = x+1)begin
-			if ((topLY == y) && (topLX < x && topLX+size > x))
+			if ((topLY == y) && (topLX <= x && topLX+size >= x))
 				CHECK_UPPER = 1;
 			
 			y = y + 1;
@@ -211,14 +211,14 @@ begin
 	end
 	
 	// Check Center Obstacle
-	else if (topLX + size > 101 && topLX + size < 155 && topLY + size > 94 && topLY < 120) 
+	else if (topLX + size >= 101 && topLX <= 155 && topLY + size >= 94 && topLY <= 120) 
 	begin
 		y = 93;
 		
 		// Center Right Diagonal 
 		for(x = 128; x <= 155; x = x+1) begin
 			
-			if ((topLY == y) && (topLX < x && topLX+size > x))
+			if ((topLY == y) && (topLX <= x && topLX+size >= x))
 				CHECK_UPPER = 1;
 			
 			y = y + 1;
@@ -226,7 +226,7 @@ begin
 		
 		// Center Left Diagonal 
 		for(x = 101; x <= 128; x = x+1)begin
-			if ((topLY == y) && (topLX < x && topLX+size > x))
+			if ((topLY == y) && (topLX <= x && topLX+size >= x))
 				CHECK_UPPER = 1;
 			
 			y = y - 1;
@@ -247,10 +247,10 @@ begin
 	CHECK_LOWER = 0;
 	
 	// Check Bottom Left Diagonal
-	if (topLX < 64  && topLY + size > 150 && topLY + size < 210) begin
+	if (topLX <= 64  && topLY + size >= 150 && topLY <= 210) begin
 		y = 150;
 		for(x = 4; x <= 64; x = x+1)begin
-			if ((topLY + size == y) && (topLX < x && topLX+size > x))
+			if ((topLY + size == y) && (topLX <= x && topLX+size >= x))
 				CHECK_LOWER = 1;
 			
 			y = y + 1;
@@ -258,11 +258,11 @@ begin
 	end
 	
 	// Check Bottom Right Diagonal
-	else if(topLX + size > 192 && topLY + size > 150 && topLY + size < 210) 
+	else if (topLX + size >= 192 && topLY + size >= 150 && topLY <= 210) 
 	begin
 		y = 210;
 		for(x = 192; x <= 252; x = x+1)begin
-			if ((topLY + size == y) && (topLX < x && topLX+size > x))
+			if ((topLY + size == y) && (topLX <= x && topLX+size >= x))
 				CHECK_LOWER = 1;
 				
 			y = y - 1;
@@ -270,20 +270,20 @@ begin
 	end
 	
 	// Check Center Obstacle
-	else if (topLX + size > 101 && topLX + size < 155 && topLY + size > 94 && topLY < 120) 
+	else if (topLX + size >= 101 && topLX <= 155 && topLY + size >= 94 && topLY <= 120) 
 	begin
 		y = 120;
 		
 		// Center Right Diagonal
 		for(x = 101; x <= 128; x = x+1)begin
-			if ((topLY + size == y) && (topLX < x && topLX+size > x))
+			if ((topLY + size == y) && (topLX <= x && topLX+size >= x))
 				CHECK_LOWER = 1;
 			
 			y = y - 1;
 		end
 		// Center Left Diagonal 
 		for(x = 128; x <= 155; x = x+1)begin
-			if ((topLY + size == y) && (topLX < x && topLX+size > x))
+			if ((topLY + size == y) && (topLX <= x && topLX+size >= x))
 				CHECK_LOWER = 1;
 				
 			y = y + 1;
@@ -304,12 +304,12 @@ begin
 	CHECK_LEFT = 0;
 	
 	// Check Bottom Left Diagonal
-	if (topLX < 64  && topLY + size > 150 && topLY + size < 210)
+	if (topLX <= 64  && topLY + size >= 150 && topLY <= 210)
 	begin
 		y = 150;
 		for(x = 4; x < 64; x = x+1)
 		begin
-			if ((topLX == x) && (topLY < y && topLY+size > y))
+			if ((topLX == x) && (topLY <= y && topLY+size >= y))
 				CHECK_LEFT = 1;
 				
 			y = y + 1;
@@ -317,14 +317,14 @@ begin
 	end
 	
 	// Check Center Obstacle
-	else if (topLX + size > 101 && topLX + size < 155 && topLY + size > 94 && topLY < 120)
+	else if (topLX + size >= 101 && topLX <= 155 && topLY + size >= 94 && topLY <= 120)
 	begin
 		y = 93;
 		
 		// Center Right Diagonal
 		for(x = 128; x < 155; x = x+1)
 		begin
-			if ((topLX == x) && (topLY < y && topLY+size > y))
+			if ((topLX == x) && (topLY <= y && topLY+size >= y))
 				CHECK_LEFT = 1;
 			
 			y = y + 1;
@@ -333,7 +333,7 @@ begin
 		// Center Left Diagonal
 		for(x = 101; x <= 128; x = x+1)
 		begin
-			if ((topLX == x) && (topLY < y && topLY+size > y))
+			if ((topLX == x) && (topLY <= y && topLY+size >= y))
 				CHECK_LEFT = 1;
 			
 			y = y - 1;
@@ -352,11 +352,11 @@ begin
 	
 	// Check Bottom Right Diagonal
 	CHECK_RIGHT = 0;
-	if (topLX + size > 192 && topLY + size > 150 && topLY + size < 210)
+	if (topLX + size >= 192 && topLY + size >= 150 && topLY <= 210)
 	begin
 		y = 210;
 		for(x = 192; x < 252; x = x+1)begin
-			if ((topLX + size == x) && (topLY < y && topLY+size > y))
+			if ((topLX + size == x) && (topLY <= y && topLY+size >= y))
 				CHECK_RIGHT = 1;
 			
 			y = y - 1;
@@ -365,12 +365,12 @@ begin
 	
 	
 	// Check Top Right Diagonal
-	else if (topLX + size > 214 && topLY < 42)
+	else if (topLX + size >= 214 && topLY <= 42)
 	begin
 		y = 4;
 		for(x = 214; x <= 252; x = x+1)
 		begin
-			if ((topLX + size == x) && (topLY < y && topLY+size > y))
+			if ((topLX + size == x) && (topLY <= y && topLY+size >= y))
 				CHECK_RIGHT = 1;
 			
 			y = y + 1;
@@ -378,14 +378,14 @@ begin
 	end
 	
 	// Check Center Obstacle
-	else if (topLX + size > 101 && topLX + size < 155 && topLY + size > 94 && topLY < 120) 
+	else if (topLX + size >= 101 && topLX <= 155 && topLY + size >= 94 && topLY <= 120) 
 	begin
 		y = 93;
 
 		// Center Right Diagonal
 		for(x = 128; x < 155; x = x+1)
 		begin
-			if ((topLX + size == x) && (topLY < y && topLY+size > y))
+			if ((topLX + size == x) && (topLY <= y && topLY+size >= y))
 				CHECK_RIGHT = 1;
 			
 			y = y + 1;
@@ -394,7 +394,7 @@ begin
 		// Center Left Diagonal
 		for(x = 101; x < 128; x = x+1)
 		begin
-			if ((topLX + size == x) && (topLY < y && topLY+size > y))
+			if ((topLX + size == x) && (topLY <= y && topLY+size >= y))
 				CHECK_RIGHT = 1;
 			
 			y = y - 1;
