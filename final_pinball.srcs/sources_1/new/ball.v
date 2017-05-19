@@ -191,13 +191,16 @@ input topLX, topLY;
 	SITUATION = {CHECK_LEFT(topLX,topLY), CHECK_RIGHT(topLX,topLY), CHECK_UPPER(topLX,topLY), CHECK_LOWER(topLX,topLY)};
 endfunction
     
+	
+// ******* CHECK TOP ********************************************************************
 function [0:0] CHECK_UPPER; // 0010
 input [7:0] topLX, topLY;
 reg [8:0] x,y;
 begin
 	CHECK_UPPER = 0;
-	if(topLX > 210 && topLY < 42) begin
-	//check uper right diagnal obsticle
+	
+	// Check Top Right Diagonal
+	if (topLX + size > 214 && topLY < 42) begin
 		y = 4;
 		for(x = 214; x <= 252; x = x+1)begin
 			if ((topLY == y) && (topLX < x && topLX+size > x))
@@ -207,9 +210,12 @@ begin
 		end
 	end
 	
-	//check middle right diagnal obsticle
-	else if(topLX > 101 && topLX < 128 && topLY > 93 && topLY < 120) begin
+	// Check Center Obstacle
+	else if (topLX + size > 101 && topLX + size < 155 && topLY + size > 94 && topLY < 120) 
+	begin
 		y = 93;
+		
+		// Center Right Diagonal 
 		for(x = 128; x <= 155; x = x+1) begin
 			
 			if ((topLY == y) && (topLX < x && topLX+size > x))
@@ -218,7 +224,7 @@ begin
 			y = y + 1;
 		end
 		
-		//check middle left diagnal obsticle
+		// Center Left Diagonal 
 		for(x = 101; x <= 128; x = x+1)begin
 			if ((topLY == y) && (topLX < x && topLX+size > x))
 				CHECK_UPPER = 1;
@@ -231,13 +237,17 @@ begin
 end
 endfunction
 
+	
+	
+// ******* CHECK BOTTOM *****************************************************************
 function [0:0]CHECK_LOWER; // 0001
 input [7:0] topLX, topLY;
 reg [8:0] x, y;
 begin
 	CHECK_LOWER = 0;
-	if(topLX < 64 && topLY-size > 150)begin
-		//check bottom left diagnal obsticle
+	
+	// Check Bottom Left Diagonal
+	if (topLX < 64  && topLY + size > 150 && topLY + size < 210) begin
 		y = 150;
 		for(x = 4; x <= 64; x = x+1)begin
 			if ((topLY + size == y) && (topLX < x && topLX+size > x))
@@ -247,26 +257,9 @@ begin
 		end	
 	end
 	
-	//check middle left diagnal obsticle
-	else if(topLX > 101 && topLX < 128 && topLY-size > 94 && topLY-size < 120) begin
-		y = 120;
-		for(x = 101; x <= 128; x = x+1)begin
-			if ((topLY + size == y) && (topLX < x && topLX+size > x))
-				CHECK_LOWER = 1;
-			
-			y = y - 1;
-		end
-	//check middle right diagnal obsticle
-		for(x = 128; x <= 155; x = x+1)begin
-			if ((topLY + size == y) && (topLX < x && topLX+size > x))
-				CHECK_LOWER = 1;
-				
-			y = y + 1;
-		end	
-	end
-	
-	//check bottom right diagnal obsticle
-	else if(topLX > 192 && topLY-size > 150) begin
+	// Check Bottom Right Diagonal
+	else if(topLX + size > 192 && topLY + size > 150 && topLY + size < 210) 
+	begin
 		y = 210;
 		for(x = 192; x <= 252; x = x+1)begin
 			if ((topLY + size == y) && (topLX < x && topLX+size > x))
@@ -275,20 +268,45 @@ begin
 			y = y - 1;
 		end	
 	end
-	//((posy > 240) || 
+	
+	// Check Center Obstacle
+	else if (topLX + size > 101 && topLX + size < 155 && topLY + size > 94 && topLY < 120) 
+	begin
+		y = 120;
+		
+		// Center Right Diagonal
+		for(x = 101; x <= 128; x = x+1)begin
+			if ((topLY + size == y) && (topLX < x && topLX+size > x))
+				CHECK_LOWER = 1;
+			
+			y = y - 1;
+		end
+		// Center Left Diagonal 
+		for(x = 128; x <= 155; x = x+1)begin
+			if ((topLY + size == y) && (topLX < x && topLX+size > x))
+				CHECK_LOWER = 1;
+				
+			y = y + 1;
+		end	
+	end
+	
+
 	else CHECK_LOWER = bumper_hit; // bottom  ;
 end
 endfunction
+	
 
+// ******* CHECK LEFT *******************************************************************
 function [0:0] CHECK_LEFT; //1000
 input [7:0] topLX, topLY;
 reg [8:0] x,y;
 begin
 	CHECK_LEFT = 0;
-	if(topLX < 64 && topLY > 150)
+	
+	// Check Bottom Left Diagonal
+	if (topLX < 64  && topLY + size > 150 && topLY + size < 210)
 	begin
 		y = 150;
-		//check bottom left diagnal obsticle
 		for(x = 4; x < 64; x = x+1)
 		begin
 			if ((topLX == x) && (topLY < y && topLY+size > y))
@@ -298,10 +316,12 @@ begin
 		end	
 	end
 	
-	//check middle right diagnal obsticle
-	else if(topLX > 101 && topLX < 155 && topLY > 94 && topLY < 120) 
+	// Check Center Obstacle
+	else if (topLX + size > 101 && topLX + size < 155 && topLY + size > 94 && topLY < 120)
 	begin
 		y = 93;
+		
+		// Center Right Diagonal
 		for(x = 128; x < 155; x = x+1)
 		begin
 			if ((topLX == x) && (topLY < y && topLY+size > y))
@@ -310,7 +330,7 @@ begin
 			y = y + 1;
 		end
 		
-		// middle left diagonal
+		// Center Left Diagonal
 		for(x = 101; x <= 128; x = x+1)
 		begin
 			if ((topLX == x) && (topLY < y && topLY+size > y))
@@ -319,17 +339,20 @@ begin
 			y = y - 1;
 		end
 	end
-	else CHECK_LEFT = (topLX <= size); //default condition
+	else CHECK_LEFT = (topLX <= size) || (topLX < 64 && topLY > 150); //default condition
 end
 endfunction
 
+	
+// ******* CHECK RIGHT ******************************************************************
 function [0:0] CHECK_RIGHT; //0100
 input [7:0] topLX, topLY;
 reg [8:0] x,y;
 begin
-	//check bottom right diagnal obsticle
+	
+	// Check Bottom Right Diagonal
 	CHECK_RIGHT = 0;
-	if(topLX > 192 && topLY > 150) 
+	if (topLX + size > 192 && topLY + size > 150 && topLY + size < 210)
 	begin
 		y = 210;
 		for(x = 192; x < 252; x = x+1)begin
@@ -340,9 +363,10 @@ begin
 		end	
 	end
 	
-	else if(topLX > 210 && topLY < 42)
+	
+	// Check Top Right Diagonal
+	else if (topLX + size > 214 && topLY < 42)
 	begin
-	//check uper right diagnal obsticle
 		y = 4;
 		for(x = 214; x <= 252; x = x+1)
 		begin
@@ -353,12 +377,12 @@ begin
 		end
 	end
 	
-	// middle objects
-	else if(topLX > 101 && topLX < 155 && topLY > 94 && topLY < 120) 
+	// Check Center Obstacle
+	else if (topLX + size > 101 && topLX + size < 155 && topLY + size > 94 && topLY < 120) 
 	begin
 		y = 93;
 
-		// middle right
+		// Center Right Diagonal
 		for(x = 128; x < 155; x = x+1)
 		begin
 			if ((topLX + size == x) && (topLY < y && topLY+size > y))
@@ -367,8 +391,7 @@ begin
 			y = y + 1;
 		end
 		
-		//middle left obsticle
-			
+		// Center Left Diagonal
 		for(x = 101; x < 128; x = x+1)
 		begin
 			if ((topLX + size == x) && (topLY < y && topLY+size > y))
@@ -377,7 +400,7 @@ begin
 			y = y - 1;
 		end	
 	end	
-	else CHECK_RIGHT = ((topLX + size) >= (8'd255 - size));
+	else CHECK_RIGHT = ((topLX + size) >= (8'd255 - size) || (topLX + size > 192 && topLY > 150));
 end
 endfunction
     
