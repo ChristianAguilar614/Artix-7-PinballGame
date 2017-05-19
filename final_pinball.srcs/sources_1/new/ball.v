@@ -291,7 +291,7 @@ begin
 	end
 	
 
-	else CHECK_LOWER = bumper_hit; // bottom  ;
+	else CHECK_LOWER = bumper_hit || (topLY + size > size); // bottom  ;
 end
 endfunction
 	
