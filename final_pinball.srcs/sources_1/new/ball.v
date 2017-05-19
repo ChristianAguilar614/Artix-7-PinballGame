@@ -11,10 +11,11 @@
 // using Verilog-2001 syntax.
 //////////////////////////////////////////////////////////////////////////////////
 
+
 localparam [7:0] initialx = 8'd230;
 localparam [7:0] initialy = 8'd100;
 localparam signed [7:0] initialdy = -7;
-localparam signed [7:0] initialdx = 2;
+localparam signed [7:0] initialdx = 1;
 localparam signed [7:0] max_velo = 4'd8;
 localparam [1:0] gravity_magnitude = 2'd1;
 localparam [3:0] gravity_rate = 4'd5;
@@ -33,7 +34,7 @@ assign reset = control[2];
 
 // ****** OUTPUT ***********
 
-assign size = 4'h8;
+assign size = `BS;
 
 // Initial speed
 reg signed [7:0] dx = initialdx; 
@@ -61,8 +62,12 @@ begin
 	else gravity_ctr <= gravity_ctr + 1;
 end
 
-
-
+// Calculation
+wire [7:0] BTOP, BBOT, BLEFT, BRIGHT;
+assign BTOP = posy;
+assign BBOT = posy + `BS;
+assign BLEFT = posx;
+assign BRIGHT = posx + `BS;
 
 
 // Storage registers
@@ -94,7 +99,7 @@ begin
 				storey <= posy;
 				
 				case (situation) // left, right, top, bottom
-					4'b1000, 4'b0100:  // left, right
+					4'b1000, 4'b0100, 4'b0011, 4'b1011, 4'b0111:  // left, right
 					begin
 						// if the collision has not been detected yet
 						// flip the velocity
@@ -105,11 +110,11 @@ begin
 						storedy <= dy;
 						collision <= 1;
 					end
-					4'b0010, 4'b0001, 4'b1110, 4'b1101:  // top, bottom, odd case when both sides and top hit
+					4'b0010, 4'b0001, 4'b1110, 4'b1101, 4'b1100:  // top, bottom, odd case when both sides and top hit
 					begin
 						if (!collision)
 						begin
-							storedy <= (bumper_hit) ? -1 * max_velo: dy * -1;
+							storedy <= (paddle_hit) ? -1 * max_velo: dy * -1;
 						end
 						else storedy <= storedy;
 						gravity_applied <= collision;
@@ -178,32 +183,34 @@ end
 
 /******************************* functions ******************/    
 
-assign situation[3] = CHECK_LEFT(posx,posy); //posx < 10); // left
-assign situation[2] = CHECK_RIGHT(posx,posy); //(posx > 240); // right
-assign situation[1] = CHECK_UPPER(posx,posy); //(posy < 10); // top
-assign situation[0] = CHECK_LOWER(posx,posy); //((posy > 240) || ((control[0] && posy > 210) && (posx > 64) && (posx < 106)) || ((control[1] && posy > 210) && (posx > 150) && (posx < 192))); // bottom  
+assign situation[3] = CHECK_LEFT(BLEFT, BRIGHT, BTOP, BBOT); //posx < 10); // left
+assign situation[2] = CHECK_RIGHT(BLEFT, BRIGHT, BTOP, BBOT); //(posx > 240); // right
+assign situation[1] = CHECK_UPPER(BLEFT, BRIGHT, BTOP, BBOT); //(posy < 10); // top
+assign situation[0] = CHECK_LOWER(BLEFT, BRIGHT, BTOP, BBOT); //((posy > 240) || ((control[0] && posy > 210) && (posx > 64) && (posx < 106)) || ((control[1] && posy > 210) && (posx > 150) && (posx < 192))); // bottom  
 
-assign bumper_hit = ((control[0] && (posy > (210 - size/2 - max_velo))) && (posx > 64) && (posx < 106)) || ((control[1] && (posy > (210 - size/2 - max_velo)) && (posx > 150) && (posx < 192))); // bottom  ;
+assign paddle_hit = (
+						(BBOT >= `LPAD_UP_ENDY && BBOT <= `LPAD_DN_ENDY)
+						&& (
+							(control[0] && (BRIGHT >= `LPAD_UP_STAX && BLEFT <= `LPAD_UP_ENDX)) 
+							|| (control[1] && (BRIGHT >= `RPAD_UP_STAX && BLEFT <= `RPAD_UP_ENDX))
+						)
+					);
 
 
-function [3:0] SITUATION;
-input topLX, topLY; 
-	SITUATION = {CHECK_LEFT(topLX,topLY), CHECK_RIGHT(topLX,topLY), CHECK_UPPER(topLX,topLY), CHECK_LOWER(topLX,topLY)};
-endfunction
-    
-	
 // ******* CHECK TOP ********************************************************************
-function [0:0] CHECK_UPPER; // 0010
-input [7:0] topLX, topLY;
-reg [8:0] x,y;
+function CHECK_UPPER; // 0010
+input [7:0] LEFT, RIGHT, TOP, BOTTOM;
+reg [7:0] x,y;
 begin
 	CHECK_UPPER = 0;
 	
 	// Check Top Right Diagonal
-	if (topLX + size >= 214 && topLY <= 42) begin
-		y = 4;
-		for(x = 214; x <= 252; x = x+1)begin
-			if ((topLY == y) && (topLX <= x && topLX+size >= x))
+	if ((RIGHT >= `TR_DIAG_STAX) && (TOP <= `TR_DIAG_ENDY)) 
+	begin
+		y = `BOARD_TOP;
+		for(x = `TR_DIAG_STAX; x <= `TR_DIAG_ENDX; x = x+1)
+		begin
+			if ((TOP == y) && (LEFT <= x && RIGHT >= x))
 				CHECK_UPPER = 1;
 			
 			y = y + 1;
@@ -211,46 +218,50 @@ begin
 	end
 	
 	// Check Center Obstacle
-	else if (topLX + size >= 101 && topLX <= 155 && topLY + size >= 94 && topLY <= 120) 
+	else if ((RIGHT >= `CTR_STAX && LEFT <= `CTR_ENDX) && (BOTTOM >= `CTR_TOPY && TOP <= `CTR_BOTY)) 
 	begin
-		y = 93;
+		y = `CTR_TOPY;
 		
 		// Center Right Diagonal 
-		for(x = 128; x <= 155; x = x+1) begin
+		for(x = `CTR_MIDX; x <= `CTR_ENDX; x = x+1) 
+		begin
 			
-			if ((topLY == y) && (topLX <= x && topLX+size >= x))
+			if ((TOP == y) && (LEFT <= x && RIGHT >= x))
 				CHECK_UPPER = 1;
 			
 			y = y + 1;
 		end
 		
 		// Center Left Diagonal 
-		for(x = 101; x <= 128; x = x+1)begin
-			if ((topLY == y) && (topLX <= x && topLX+size >= x))
+		for (x = `CTR_STAX; x <= `CTR_MIDX; x = x+1)
+		begin
+			if ((TOP == y) && (LEFT <= x && RIGHT >= x))
 				CHECK_UPPER = 1;
 			
 			y = y - 1;
-		end	
+		end
 	end
 	
-	else CHECK_UPPER = (topLY < 20); //default top case
+	else CHECK_UPPER = (TOP <= `BOARD_TOP); //default top case
 end
 endfunction
 
 	
 	
 // ******* CHECK BOTTOM *****************************************************************
-function [0:0]CHECK_LOWER; // 0001
-input [7:0] topLX, topLY;
-reg [8:0] x, y;
+function CHECK_LOWER; // 0001
+input [7:0] LEFT, RIGHT, TOP, BOTTOM;
+reg [7:0] x, y;
 begin
 	CHECK_LOWER = 0;
 	
 	// Check Bottom Left Diagonal
-	if (topLX <= 64  && topLY + size >= 150 && topLY <= 210) begin
-		y = 150;
-		for(x = 4; x <= 64; x = x+1)begin
-			if ((topLY + size == y) && (topLX <= x && topLX+size >= x))
+	if ((LEFT <= `LBUMP_DIAG_ENDX) && (BOTTOM >= `LBUMP_DIAG_STAY && TOP <= `LBUMP_DIAG_ENDY))
+	begin
+		y = `LBUMP_DIAG_STAY;
+		for(x = `LBUMP_DIAG_STAX; x <= `LBUMP_DIAG_ENDX; x = x+1)
+		begin
+			if ((BOTTOM == y) && (LEFT <= x && RIGHT >= x))
 				CHECK_LOWER = 1;
 			
 			y = y + 1;
@@ -258,11 +269,12 @@ begin
 	end
 	
 	// Check Bottom Right Diagonal
-	else if (topLX + size >= 192 && topLY + size >= 150 && topLY <= 210) 
+	else if ((RIGHT >= `RBUMP_DIAG_STAX) && (BOTTOM >= `RBUMP_DIAG_ENDY && TOP <= `RBUMP_DIAG_STAY)) 
 	begin
-		y = 210;
-		for(x = 192; x <= 252; x = x+1)begin
-			if ((topLY + size == y) && (topLX <= x && topLX+size >= x))
+		y = `RBUMP_DIAG_STAY;
+		for(x = `RBUMP_DIAG_STAX; x <= `RBUMP_DIAG_ENDX; x = x+1)
+		begin
+			if ((BOTTOM == y) && (LEFT <= x && RIGHT >= x))
 				CHECK_LOWER = 1;
 				
 			y = y - 1;
@@ -270,46 +282,51 @@ begin
 	end
 	
 	// Check Center Obstacle
-	else if (topLX + size >= 101 && topLX <= 155 && topLY + size >= 94 && topLY <= 120) 
+	else if ((RIGHT >= `CTR_STAX && LEFT <= `CTR_ENDX) && (BOTTOM >= `CTR_TOPY && TOP <= `CTR_BOTY))
 	begin
-		y = 120;
 		
-		// Center Right Diagonal
-		for(x = 101; x <= 128; x = x+1)begin
-			if ((topLY + size == y) && (topLX <= x && topLX+size >= x))
+		y = `CTR_TOPY;
+		
+		// Center Right Diagonal 
+		for (x = `CTR_MIDX; x <= `CTR_ENDX; x = x+1) 
+		begin
+			
+			if ((BOTTOM == y) && (LEFT <= x && RIGHT >= x))
+				CHECK_LOWER = 1;
+			
+			y = y + 1;
+		end
+		
+		// Center Left Diagonal 
+		for (x = `CTR_STAX; x <= `CTR_MIDX; x = x+1)
+		begin
+			if ((BOTTOM == y) && (LEFT <= x && RIGHT >= x))
 				CHECK_LOWER = 1;
 			
 			y = y - 1;
 		end
-		// Center Left Diagonal 
-		for(x = 128; x <= 155; x = x+1)begin
-			if ((topLY + size == y) && (topLX <= x && topLX+size >= x))
-				CHECK_LOWER = 1;
-				
-			y = y + 1;
-		end	
 	end
 	
 
-	else CHECK_LOWER = bumper_hit || (topLY + size > size); // bottom  ;
+	else CHECK_LOWER = paddle_hit || (BOTTOM >= `BOARD_BOT_BARRIER); // bottom  ;
 end
 endfunction
 	
 
 // ******* CHECK LEFT *******************************************************************
-function [0:0] CHECK_LEFT; //1000
-input [7:0] topLX, topLY;
-reg [8:0] x,y;
+function CHECK_LEFT; //1000
+input [7:0] LEFT, RIGHT, TOP, BOTTOM;
+reg [7:0] x,y;
 begin
 	CHECK_LEFT = 0;
 	
 	// Check Bottom Left Diagonal
-	if (topLX <= 64  && topLY + size >= 150 && topLY <= 210)
+	if ((LEFT <= `LBUMP_DIAG_ENDX) && (BOTTOM >= `LBUMP_DIAG_STAY && TOP <= `LBUMP_DIAG_ENDY))
 	begin
-		y = 150;
-		for(x = 4; x < 64; x = x+1)
+		y = `LBUMP_DIAG_STAY;
+		for(x = `LBUMP_DIAG_STAX; x <= `LBUMP_DIAG_ENDX; x = x+1)
 		begin
-			if ((topLX == x) && (topLY <= y && topLY+size >= y))
+			if ((LEFT == x) && (TOP <= y && BOTTOM >= y))
 				CHECK_LEFT = 1;
 				
 			y = y + 1;
@@ -317,92 +334,94 @@ begin
 	end
 	
 	// Check Center Obstacle
-	else if (topLX + size >= 101 && topLX <= 155 && topLY + size >= 94 && topLY <= 120)
+	else if ((RIGHT >= `CTR_STAX && LEFT <= `CTR_ENDX) && (BOTTOM >= `CTR_TOPY && TOP <= `CTR_BOTY))
 	begin
-		y = 93;
+		y = `CTR_TOPY;
 		
 		// Center Right Diagonal
-		for(x = 128; x < 155; x = x+1)
+		for (x = `CTR_MIDX; x <= `CTR_ENDX; x = x+1) 
 		begin
-			if ((topLX == x) && (topLY <= y && topLY+size >= y))
+			if ((LEFT == x) && (TOP <= y && BOTTOM >= y))
 				CHECK_LEFT = 1;
 			
 			y = y + 1;
 		end
 		
 		// Center Left Diagonal
-		for(x = 101; x <= 128; x = x+1)
+		for (x = `CTR_STAX; x <= `CTR_MIDX; x = x+1)
 		begin
-			if ((topLX == x) && (topLY <= y && topLY+size >= y))
+			if ((LEFT == x) && (TOP <= y && BOTTOM >= y))
 				CHECK_LEFT = 1;
 			
 			y = y - 1;
 		end
 	end
-	else CHECK_LEFT = (topLX <= size) || (topLX < 64 && topLY > 150); //default condition
+	else CHECK_LEFT = (LEFT <= `BOARD_LEFT) || (LEFT <= `LBUMP_DIAG_ENDX && BOTTOM >= `LBUMP_DIAG_ENDY); //default condition
 end
 endfunction
 
 	
 // ******* CHECK RIGHT ******************************************************************
-function [0:0] CHECK_RIGHT; //0100
-input [7:0] topLX, topLY;
-reg [8:0] x,y;
+function CHECK_RIGHT; //0100
+input [7:0] LEFT, RIGHT, TOP, BOTTOM;
+reg [7:0] x,y;
 begin
-	
-	// Check Bottom Right Diagonal
 	CHECK_RIGHT = 0;
-	if (topLX + size >= 192 && topLY + size >= 150 && topLY <= 210)
-	begin
-		y = 210;
-		for(x = 192; x < 252; x = x+1)begin
-			if ((topLX + size == x) && (topLY <= y && topLY+size >= y))
-				CHECK_RIGHT = 1;
-			
-			y = y - 1;
-		end	
-	end
-	
 	
 	// Check Top Right Diagonal
-	else if (topLX + size >= 214 && topLY <= 42)
+	if ((RIGHT >= `TR_DIAG_STAX) && (TOP <= `TR_DIAG_ENDY)) 
 	begin
-		y = 4;
-		for(x = 214; x <= 252; x = x+1)
+		y = `BOARD_TOP;
+		for(x = `TR_DIAG_STAX; x <= `TR_DIAG_ENDX; x = x+1)
 		begin
-			if ((topLX + size == x) && (topLY <= y && topLY+size >= y))
+			if ((RIGHT == x) && (TOP <= y && BOTTOM >= y))
 				CHECK_RIGHT = 1;
 			
 			y = y + 1;
 		end
 	end
 	
-	// Check Center Obstacle
-	else if (topLX + size >= 101 && topLX <= 155 && topLY + size >= 94 && topLY <= 120) 
+	// Check Bottom Right Diagonal
+	else if ((RIGHT >= `RBUMP_DIAG_STAX) && (BOTTOM >= `RBUMP_DIAG_ENDY && TOP <= `RBUMP_DIAG_STAY)) 
 	begin
-		y = 93;
-
-		// Center Right Diagonal
-		for(x = 128; x < 155; x = x+1)
+		y = `RBUMP_DIAG_STAY;
+		for(x = `RBUMP_DIAG_STAX; x <= `RBUMP_DIAG_ENDX; x = x+1)
 		begin
-			if ((topLX + size == x) && (topLY <= y && topLY+size >= y))
+			if ((RIGHT == x) && (TOP <= y && BOTTOM >= y))
+				CHECK_RIGHT = 1;
+			
+			y = y - 1;
+		end	
+	end
+	
+	// Check Center Obstacle
+	else if ((RIGHT >= `CTR_STAX && LEFT <= `CTR_ENDX) && (BOTTOM >= `CTR_TOPY && TOP <= `CTR_BOTY))
+	begin
+		y = `CTR_TOPY;
+		
+		// Center Right Diagonal
+		for (x = `CTR_MIDX; x <= `CTR_ENDX; x = x+1) 
+		begin
+			if ((RIGHT == x) && (TOP <= y && BOTTOM >= y))
 				CHECK_RIGHT = 1;
 			
 			y = y + 1;
 		end
 		
 		// Center Left Diagonal
-		for(x = 101; x < 128; x = x+1)
+		for (x = `CTR_STAX; x <= `CTR_MIDX; x = x+1)
 		begin
-			if ((topLX + size == x) && (topLY <= y && topLY+size >= y))
+			if ((RIGHT == x) && (TOP <= y && BOTTOM >= y))
 				CHECK_RIGHT = 1;
 			
 			y = y - 1;
 		end	
 	end	
-	else CHECK_RIGHT = ((topLX + size) >= (8'd255 - size) || (topLX + size > 192 && topLY > 150));
+	else CHECK_RIGHT = (RIGHT >= `BOARD_RIGHT) || (RIGHT >= `RBUMP_DIAG_STAX && BOTTOM >= `LBUMP_DIAG_STAY);
 end
 endfunction
     
 
 endmodule
+
+
