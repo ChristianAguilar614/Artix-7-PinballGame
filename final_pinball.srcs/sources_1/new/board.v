@@ -11,7 +11,6 @@
 // using Verilog-2001 syntax.
 //////////////////////////////////////////////////////////////////////////////////
 
-
 module board(
 	//input wire pclk,
 	input wire pclk,
@@ -39,6 +38,8 @@ localparam [1:0] REG_DATA_MODE_HLD = 2'h0;
 localparam [1:0] REG_DATA_MODE_CLR = 2'h1;
 localparam [1:0] REG_DATA_MODE_LIN = 2'h2;
 localparam [1:0] REG_DATA_MODE_EXP = 2'h3;
+
+localparam [3:0] bs = 4'd8;
 
 reg [1:0]gameState = 2'b01;
 reg [4:0] draw_state = 4'b0000;
@@ -90,46 +91,52 @@ begin
 					end
       			2'b01: begin
 						case (draw_state)
-						//borders
+						
 						// ******** BOARD **********************
-						4'd0: {startx, starty, endx, endy, beam, mode} <= {ballSize, ballSize, 8'd127, ballSize, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP};//top horizantal line Part 1
-						4'd1: {startx, starty, endx, endy, beam, mode} <= {8'd128, ballSize, 8'd255 - ballSize, ballSize, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP};//top horizantal line Part 2
-						4'd2: {startx, starty, endx, endy, beam, mode} <= {8'd255 - ballSize, ballSize, 8'd255 - ballSize, 8'd127, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //Right vertical line Part 1
-						4'd3: {startx, starty, endx, endy, beam, mode} <= {8'd255 - ballSize, 8'd128, 8'd255 - ballSize, 8'd255, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //Right vertical line Part 2
-						4'd4: {startx, starty, endx, endy, beam, mode} <= {ballSize, ballSize, ballSize, 8'd127, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //left vertical line Part 1
-						4'd5: {startx, starty, endx, endy, beam, mode} <= {ballSize, 8'd128, ballSize, 8'd255, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //left vertical line Part 2
-						4'd6: {startx, starty, endx, endy, beam, mode} <= {8'd215 - ballSize, ballSize, 8'd255 - ballSize, 8'd040 + ballSize, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //top right diagonal line
+						// BORDERS
+						5'd0: {startx, starty, endx, endy, beam, mode} <= {`BOARD_LEFT, `BOARD_TOP, 8'd127, `BOARD_TOP, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP};//top horizantal line Part 1
+						5'd1: {startx, starty, endx, endy, beam, mode} <= {8'd128, `BOARD_TOP, `BOARD_RIGHT, `BOARD_TOP, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP};//top horizantal line Part 2
+						5'd2: {startx, starty, endx, endy, beam, mode} <= {`BOARD_RIGHT, `BOARD_TOP, `BOARD_RIGHT, 8'd127, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //Right vertical line Part 1
+						5'd3: {startx, starty, endx, endy, beam, mode} <= {`BOARD_RIGHT, 8'd128, `BOARD_RIGHT, `BOARD_BOT, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //Right vertical line Part 2
+						5'd4: {startx, starty, endx, endy, beam, mode} <= {`BOARD_LEFT, `BOARD_TOP, `BOARD_LEFT, 8'd127, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //left vertical line Part 1
+						5'd5: {startx, starty, endx, endy, beam, mode} <= {`BOARD_LEFT, 8'd128, `BOARD_LEFT, `BOARD_BOT, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //left vertical line Part 2
+						
+						//top right diagonal line
+						5'd6: {startx, starty, endx, endy, beam, mode} <= {`TR_DIAG_STAX, `TR_DIAG_STAY, `TR_DIAG_ENDX, `TR_DIAG_ENDY, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; 
 						//triangle in the middle
-						4'd7: {startx, starty, endx, endy, beam, mode} <= {8'd101, 8'd120, 8'd128, 8'd093, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //86, 120, 127, 96
-						4'd8: {startx, starty, endx, endy, beam, mode} <= {8'd128, 8'd093, 8'd155, 8'd120, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //127, 96, 168, 120
+						5'd7: {startx, starty, endx, endy, beam, mode} <= {`CTR_STAX, `CTR_BOTY, `CTR_MIDX, `CTR_TOPY, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //86, 120, 127, 96
+						5'd8: {startx, starty, endx, endy, beam, mode} <= {`CTR_MIDX, `CTR_TOPY, `CTR_ENDX, `CTR_BOTY, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //127, 96, 168, 120
+						
 						//left paddel extention
-						4'd9: {startx, starty, endx, endy, beam, mode} <= {ballSize, 8'd210, 8'd060 + ballSize, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //4, 210, 64, 210
-						4'd10: {startx, starty, endx, endy, beam, mode} <= {ballSize, 8'd150, 8'd060 + ballSize, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //4, 154, 64, 210
-						4'd11: ;//{startx, starty, endx, endy, beam, mode} <= {8'd064, 8'd210, 8'd095, 8'd241, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; // paddle left
+						5'd9: {startx, starty, endx, endy, beam, mode} <= {`LBUMP_DIAG_STAX, `LBUMP_DIAG_ENDY, `LBUMP_DIAG_ENDX, `LBUMP_DIAG_ENDY, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; // 
+						5'd10: {startx, starty, endx, endy, beam, mode} <= {`LBUMP_DIAG_STAX, `LBUMP_DIAG_STAY, `LBUMP_DIAG_ENDX, `LBUMP_DIAG_ENDY, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; // DIAG
+						
 						//right paddel extention
-						4'd12: {startx, starty, endx, endy, beam, mode} <= {8'd255 - ballSize, 8'd210, 8'd195 - ballSize, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; 
-						4'd13: {startx, starty, endx, endy, beam, mode} <= {8'd195 - ballSize, 8'd210, 8'd255 - ballSize, 8'd150, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP};
-						4'd14: ;//{startx, starty, endx, endy, beam, mode} <= {8'd161, 8'd241, 8'd192, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP};  // paddle right
-						4'd15: ; // should never get here
-							
+						5'd11: {startx, starty, endx, endy, beam, mode} <= {`RBUMP_DIAG_STAX, `RBUMP_DIAG_STAY, `RBUMP_DIAG_ENDX, `RBUMP_DIAG_STAY, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; 
+						5'd12: {startx, starty, endx, endy, beam, mode} <= {`RBUMP_DIAG_STAX, `RBUMP_DIAG_STAY, `RBUMP_DIAG_ENDX, `RBUMP_DIAG_ENDY, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP};
+						
 						// ******** DYNAMIC PARTS ***************
-						5'd16: {startx, starty, endx, endy, beam, mode} <= {ballX, ballY, ballX+ballSize, ballY, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //top line
-						5'd17: {startx, starty, endx, endy, beam, mode} <= {ballX+ballSize, ballY, ballX+ballSize, ballY+ballSize, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //right line
-						5'd18: {startx, starty, endx, endy, beam, mode} <= {ballX, ballY+ballSize, ballX+ballSize, ballY+ballSize, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //bot line
-						5'd19: {startx, starty, endx, endy, beam, mode} <= {ballX, ballY, ballX, ballY+ballSize, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //left line
-						5'd20: // show left lever
+						// BALL
+						5'd13: {startx, starty, endx, endy, beam, mode} <= {ballX, ballY, ballX+`BS, ballY, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //top line
+						5'd14: {startx, starty, endx, endy, beam, mode} <= {ballX+`BS, ballY, ballX+`BS, ballY+`BS, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //right line
+						5'd15: {startx, starty, endx, endy, beam, mode} <= {ballX, ballY+`BS, ballX+`BS, ballY+`BS, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //bot line
+						5'd16: {startx, starty, endx, endy, beam, mode} <= {ballX, ballY, ballX, ballY+`BS, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //left line
+						
+						// PADDLES
+						5'd17: // show left lever
 						begin
-							if (control[0]) {startx, starty, endx, endy, beam, mode} <= {8'd060 + ballSize, 8'd210, 8'd105 + ballSize, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; // paddle left
-							else {startx, starty, endx, endy, beam, mode} <= {8'd060 + ballSize, 8'd210, 8'd095 + ballSize, 8'd240, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; // paddle left
+							if (control[0]) {startx, starty, endx, endy, beam, mode} <= {`LPAD_UP_STAX, `LPAD_UP_STAY, `LPAD_UP_ENDX, `LPAD_UP_ENDY, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; // paddle left
+							else {startx, starty, endx, endy, beam, mode} <= {`LPAD_DN_STAX, `LPAD_DN_STAY, `LPAD_DN_ENDX, `LPAD_DN_ENDY, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; // paddle left
 						end
-						5'd21: // show right lever
+						5'd18: // show right lever
 						begin
-							if (control[1]) {startx, starty, endx, endy, beam, mode} <= {8'd150 - ballSize, 8'd210, 8'd195 - ballSize, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP};  // paddle right up
-							else {startx, starty, endx, endy, beam, mode} <= {8'd160 - ballSize, 8'd240, 8'd195 - ballSize, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP};  // paddle right down
+							if (control[1]) {startx, starty, endx, endy, beam, mode} <= {`RPAD_UP_STAX, `RPAD_UP_STAY, `RPAD_UP_ENDX, `RPAD_UP_ENDY, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP};  // paddle right up
+							else {startx, starty, endx, endy, beam, mode} <= {`RPAD_DN_STAX, `RPAD_DN_STAY, `RPAD_DN_ENDX, `RPAD_DN_ENDY, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP};  // paddle right down
 						end
 						default: ;
 					endcase
-					draw_state <= draw_state + 1;
+					if (draw_state >= 5'd18) draw_state <= 0;
+					else draw_state <= draw_state + 1;
 					go <= 1;
 				end
 				2'b10: begin
