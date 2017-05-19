@@ -18,6 +18,7 @@ localparam signed [7:0] initialdx = 2;
 localparam signed [7:0] max_velo = 4'd8;
 localparam [1:0] gravity_magnitude = 2'd1;
 localparam [3:0] gravity_rate = 4'd5;
+localparam [3:0] bs = 4'd8;
 
 module ball(
 	input wire pclk,
@@ -33,7 +34,7 @@ assign reset = control[2];
 
 // ****** OUTPUT ***********
 
-assign size = 4'h8;
+assign size = bs;
 
 // Initial speed
 reg signed [7:0] dx = initialdx; 
@@ -94,7 +95,7 @@ begin
 				storey <= posy;
 				
 				case (situation) // left, right, top, bottom
-					4'b1000, 4'b0100:  // left, right
+					4'b1000, 4'b0100, 4'b0011, 4'b1011, 4'b0111:  // left, right
 					begin
 						// if the collision has not been detected yet
 						// flip the velocity
@@ -105,7 +106,7 @@ begin
 						storedy <= dy;
 						collision <= 1;
 					end
-					4'b0010, 4'b0001, 4'b1110, 4'b1101:  // top, bottom, odd case when both sides and top hit
+					4'b0010, 4'b0001, 4'b1110, 4'b1101, 4'b1100:  // top, bottom, odd case when both sides and top hit
 					begin
 						if (!collision)
 						begin
@@ -200,10 +201,12 @@ begin
 	CHECK_UPPER = 0;
 	
 	// Check Top Right Diagonal
-	if (topLX + size >= 214 && topLY <= 42) begin
-		y = 4;
-		for(x = 214; x <= 252; x = x+1)begin
-			if ((topLY == y) && (topLX <= x && topLX+size >= x))
+	if (topLX + bs >= (215 - bs) && topLY <= (40 + bs)) 
+	begin
+		y = bs;
+		for(x = 215; x <= (255 - bs); x = x+1)
+		begin
+			if ((topLY == y) && (topLX <= x && topLX+bs >= x))
 				CHECK_UPPER = 1;
 			
 			y = y + 1;
@@ -211,29 +214,31 @@ begin
 	end
 	
 	// Check Center Obstacle
-	else if (topLX + size >= 101 && topLX <= 155 && topLY + size >= 94 && topLY <= 120) 
+	else if ((topLX + bs >= 101 && topLX <= 155) && (topLY + bs >= 93 && topLY <= 120)) 
 	begin
 		y = 93;
 		
 		// Center Right Diagonal 
-		for(x = 128; x <= 155; x = x+1) begin
+		for(x = 128; x <= 155; x = x+1) 
+		begin
 			
-			if ((topLY == y) && (topLX <= x && topLX+size >= x))
+			if ((topLY == y) && (topLX <= x && topLX+bs >= x))
 				CHECK_UPPER = 1;
 			
 			y = y + 1;
 		end
 		
 		// Center Left Diagonal 
-		for(x = 101; x <= 128; x = x+1)begin
-			if ((topLY == y) && (topLX <= x && topLX+size >= x))
+		for(x = 101; x <= 128; x = x+1)
+		begin
+			if ((topLY == y) && (topLX <= x && topLX+bs >= x))
 				CHECK_UPPER = 1;
 			
 			y = y - 1;
-		end	
+		end
 	end
 	
-	else CHECK_UPPER = (topLY < 20); //default top case
+	else CHECK_UPPER = (topLY <= bs); //default top case
 end
 endfunction
 
@@ -247,10 +252,12 @@ begin
 	CHECK_LOWER = 0;
 	
 	// Check Bottom Left Diagonal
-	if (topLX <= 64  && topLY + size >= 150 && topLY <= 210) begin
+	if ((topLX <= 60 + bs) && (topLY + bs >= 150 && topLY <= 210))
+	begin
 		y = 150;
-		for(x = 4; x <= 64; x = x+1)begin
-			if ((topLY + size == y) && (topLX <= x && topLX+size >= x))
+		for(x = bs; x <= (60 + bs); x = x+1)
+		begin
+			if ((topLY + bs == y) && (topLX <= x && topLX+bs >= x))
 				CHECK_LOWER = 1;
 			
 			y = y + 1;
@@ -258,11 +265,12 @@ begin
 	end
 	
 	// Check Bottom Right Diagonal
-	else if (topLX + size >= 192 && topLY + size >= 150 && topLY <= 210) 
+	else if ((topLX >= 195 - bs) && (topLY + bs >= 150 && topLY <= 210)) 
 	begin
 		y = 210;
-		for(x = 192; x <= 252; x = x+1)begin
-			if ((topLY + size == y) && (topLX <= x && topLX+size >= x))
+		for(x = 195 - bs; x <= (255 - bs); x = x+1)
+		begin
+			if ((topLY + bs == y) && (topLX <= x && topLX+bs >= x))
 				CHECK_LOWER = 1;
 				
 			y = y - 1;
@@ -270,28 +278,33 @@ begin
 	end
 	
 	// Check Center Obstacle
-	else if (topLX + size >= 101 && topLX <= 155 && topLY + size >= 94 && topLY <= 120) 
+	else if ((topLX + bs >= 101 && topLX <= 155) && (topLY + bs >= 93 && topLY <= 120))
 	begin
-		y = 120;
 		
-		// Center Right Diagonal
-		for(x = 101; x <= 128; x = x+1)begin
-			if ((topLY + size == y) && (topLX <= x && topLX+size >= x))
+		y = 93;
+		
+		// Center Right Diagonal 
+		for(x = 128; x <= 155; x = x+1) 
+		begin
+			
+			if ((topLY + bs == y) && (topLX <= x && topLX+bs >= x))
+				CHECK_LOWER = 1;
+			
+			y = y + 1;
+		end
+		
+		// Center Left Diagonal 
+		for(x = 101; x <= 128; x = x+1)
+		begin
+			if ((topLY + bs == y) && (topLX <= x && topLX+bs >= x))
 				CHECK_LOWER = 1;
 			
 			y = y - 1;
 		end
-		// Center Left Diagonal 
-		for(x = 128; x <= 155; x = x+1)begin
-			if ((topLY + size == y) && (topLX <= x && topLX+size >= x))
-				CHECK_LOWER = 1;
-				
-			y = y + 1;
-		end	
 	end
 	
 
-	else CHECK_LOWER = bumper_hit || (topLY + size > size); // bottom  ;
+	else CHECK_LOWER = bumper_hit || ((topLY + bs) >= (255 - bs); // bottom  ;
 end
 endfunction
 	
@@ -304,12 +317,12 @@ begin
 	CHECK_LEFT = 0;
 	
 	// Check Bottom Left Diagonal
-	if (topLX <= 64  && topLY + size >= 150 && topLY <= 210)
+	if ((topLX <= 60 + bs) && (topLY + bs >= 150 && topLY <= 210))
 	begin
 		y = 150;
-		for(x = 4; x < 64; x = x+1)
+		for(x = bs; x <= (60 + bs); x = x+1)
 		begin
-			if ((topLX == x) && (topLY <= y && topLY+size >= y))
+			if ((topLX == x) && (topLY <= y && topLY+bs >= y))
 				CHECK_LEFT = 1;
 				
 			y = y + 1;
@@ -317,14 +330,14 @@ begin
 	end
 	
 	// Check Center Obstacle
-	else if (topLX + size >= 101 && topLX <= 155 && topLY + size >= 94 && topLY <= 120)
+	else if ((topLX + bs >= 101 && topLX <= 155) && (topLY + bs >= 93 && topLY <= 120))
 	begin
 		y = 93;
 		
 		// Center Right Diagonal
-		for(x = 128; x < 155; x = x+1)
+		for(x = 128; x <= 155; x = x+1)
 		begin
-			if ((topLX == x) && (topLY <= y && topLY+size >= y))
+			if ((topLX == x) && (topLY <= y && topLY+bs >= y))
 				CHECK_LEFT = 1;
 			
 			y = y + 1;
@@ -333,13 +346,13 @@ begin
 		// Center Left Diagonal
 		for(x = 101; x <= 128; x = x+1)
 		begin
-			if ((topLX == x) && (topLY <= y && topLY+size >= y))
+			if ((topLX == x) && (topLY <= y && topLY+bs >= y))
 				CHECK_LEFT = 1;
 			
 			y = y - 1;
 		end
 	end
-	else CHECK_LEFT = (topLX <= size) || (topLX < 64 && topLY > 150); //default condition
+	else CHECK_LEFT = (topLX <= bs) || (topLX < (60 + bs) && topLY > 150); //default condition
 end
 endfunction
 
@@ -349,58 +362,58 @@ function [0:0] CHECK_RIGHT; //0100
 input [7:0] topLX, topLY;
 reg [8:0] x,y;
 begin
-	
-	// Check Bottom Right Diagonal
 	CHECK_RIGHT = 0;
-	if (topLX + size >= 192 && topLY + size >= 150 && topLY <= 210)
-	begin
-		y = 210;
-		for(x = 192; x < 252; x = x+1)begin
-			if ((topLX + size == x) && (topLY <= y && topLY+size >= y))
-				CHECK_RIGHT = 1;
-			
-			y = y - 1;
-		end	
-	end
-	
 	
 	// Check Top Right Diagonal
-	else if (topLX + size >= 214 && topLY <= 42)
+	if (topLX + bs >= (215 - bs) && topLY <= (40 + bs))
 	begin
-		y = 4;
-		for(x = 214; x <= 252; x = x+1)
+		y = bs;
+		for(x = 215 - bs; x <= (255 - bs); x = x+1)
 		begin
-			if ((topLX + size == x) && (topLY <= y && topLY+size >= y))
+			if ((topLX + bs == x) && (topLY <= y && topLY+bs >= y))
 				CHECK_RIGHT = 1;
 			
 			y = y + 1;
 		end
 	end
 	
+	// Check Bottom Right Diagonal
+	else if ((topLX >= 195 - bs) && (topLY + bs >= 150 && topLY <= 210)) 
+	begin
+		y = 210;
+		for(x = 195 - bs; x <= (255 - bs); x = x+1)
+		begin
+			if ((topLX + bs == x) && (topLY <= y && topLY+bs >= y))
+				CHECK_RIGHT = 1;
+			
+			y = y - 1;
+		end	
+	end
+	
 	// Check Center Obstacle
-	else if (topLX + size >= 101 && topLX <= 155 && topLY + size >= 94 && topLY <= 120) 
+	else if ((topLX + bs >= 101 && topLX <= 155) && (topLY + bs >= 93 && topLY <= 120)) 
 	begin
 		y = 93;
 
 		// Center Right Diagonal
-		for(x = 128; x < 155; x = x+1)
+		for(x = 128; x <= 155; x = x+1)
 		begin
-			if ((topLX + size == x) && (topLY <= y && topLY+size >= y))
+			if ((topLX + bs == x) && (topLY <= y && topLY+bs >= y))
 				CHECK_RIGHT = 1;
 			
 			y = y + 1;
 		end
 		
 		// Center Left Diagonal
-		for(x = 101; x < 128; x = x+1)
+		for(x = 101; x <= 128; x = x+1)
 		begin
-			if ((topLX + size == x) && (topLY <= y && topLY+size >= y))
+			if ((topLX + bs == x) && (topLY <= y && topLY+bs >= y))
 				CHECK_RIGHT = 1;
 			
 			y = y - 1;
 		end	
 	end	
-	else CHECK_RIGHT = ((topLX + size) >= (8'd255 - size) || (topLX + size > 192 && topLY > 150));
+	else CHECK_RIGHT = ((topLX + bs) >= (255 - bs) || ((topLX + bs) >= (195 - bs) && topLY > 150));
 end
 endfunction
     

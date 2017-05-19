@@ -25,7 +25,7 @@ module board(
 	output reg go = 0,
 	input wire [7:0] ballX, //top left x
 	input wire [7:0] ballY, // top left y
-	input wire [3:0]ballSize,
+	input wire [3:0] ballSize,
 	input wire [2:0] control
 );
 
@@ -92,23 +92,23 @@ begin
 						case (draw_state)
 						//borders
 						// ******** BOARD **********************
-						4'd0: {startx, starty, endx, endy, beam, mode} <= {8'd004, 8'd004, 8'd127, 8'd004, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP};//top horizantal line Part 1
-						4'd1: {startx, starty, endx, endy, beam, mode} <= {8'd128, 8'd004, 8'd252, 8'd004, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP};//top horizantal line Part 2
-						4'd2: {startx, starty, endx, endy, beam, mode} <= {8'd252, 8'd004, 8'd252, 8'd127, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //Right vertical line Part 1
-						4'd3: {startx, starty, endx, endy, beam, mode} <= {8'd252, 8'd128, 8'd252, 8'd252, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //Right vertical line Part 2
-						4'd4: {startx, starty, endx, endy, beam, mode} <= {8'd004, 8'd004, 8'd004, 8'd127, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //left vertical line Part 1
-						4'd5: {startx, starty, endx, endy, beam, mode} <= {8'd004, 8'd128, 8'd004, 8'd252, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //left vertical line Part 2
-						4'd6: {startx, starty, endx, endy, beam, mode} <= {8'd214, 8'd004, 8'd252, 8'd042, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //top right diagonal line
+						4'd0: {startx, starty, endx, endy, beam, mode} <= {ballSize, ballSize, 8'd127, ballSize, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP};//top horizantal line Part 1
+						4'd1: {startx, starty, endx, endy, beam, mode} <= {8'd128, ballSize, 8'd255 - ballSize, ballSize, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP};//top horizantal line Part 2
+						4'd2: {startx, starty, endx, endy, beam, mode} <= {8'd255 - ballSize, ballSize, 8'd255 - ballSize, 8'd127, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //Right vertical line Part 1
+						4'd3: {startx, starty, endx, endy, beam, mode} <= {8'd255 - ballSize, 8'd128, 8'd255 - ballSize, 8'd255, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //Right vertical line Part 2
+						4'd4: {startx, starty, endx, endy, beam, mode} <= {ballSize, ballSize, ballSize, 8'd127, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //left vertical line Part 1
+						4'd5: {startx, starty, endx, endy, beam, mode} <= {ballSize, 8'd128, ballSize, 8'd255, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //left vertical line Part 2
+						4'd6: {startx, starty, endx, endy, beam, mode} <= {8'd215 - ballSize, ballSize, 8'd255 - ballSize, 8'd040 + ballSize, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //top right diagonal line
 						//triangle in the middle
 						4'd7: {startx, starty, endx, endy, beam, mode} <= {8'd101, 8'd120, 8'd128, 8'd093, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //86, 120, 127, 96
 						4'd8: {startx, starty, endx, endy, beam, mode} <= {8'd128, 8'd093, 8'd155, 8'd120, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //127, 96, 168, 120
 						//left paddel extention
-						4'd9: {startx, starty, endx, endy, beam, mode} <= {8'd004, 8'd210, 8'd064, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //4, 210, 64, 210
-						4'd10: {startx, starty, endx, endy, beam, mode} <= {8'd004, 8'd150, 8'd064, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //4, 154, 64, 210
+						4'd9: {startx, starty, endx, endy, beam, mode} <= {ballSize, 8'd210, 8'd060 + ballSize, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //4, 210, 64, 210
+						4'd10: {startx, starty, endx, endy, beam, mode} <= {ballSize, 8'd150, 8'd060 + ballSize, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //4, 154, 64, 210
 						4'd11: ;//{startx, starty, endx, endy, beam, mode} <= {8'd064, 8'd210, 8'd095, 8'd241, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; // paddle left
 						//right paddel extention
-						4'd12: {startx, starty, endx, endy, beam, mode} <= {8'd252, 8'd210, 8'd192, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; 
-						4'd13: {startx, starty, endx, endy, beam, mode} <= {8'd192, 8'd210, 8'd252, 8'd150, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP};
+						4'd12: {startx, starty, endx, endy, beam, mode} <= {8'd255 - ballSize, 8'd210, 8'd195 - ballSize, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; 
+						4'd13: {startx, starty, endx, endy, beam, mode} <= {8'd195 - ballSize, 8'd210, 8'd255 - ballSize, 8'd150, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP};
 						4'd14: ;//{startx, starty, endx, endy, beam, mode} <= {8'd161, 8'd241, 8'd192, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP};  // paddle right
 						4'd15: ; // should never get here
 							
@@ -119,13 +119,13 @@ begin
 						5'd19: {startx, starty, endx, endy, beam, mode} <= {ballX, ballY, ballX, ballY+ballSize, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; //left line
 						5'd20: // show left lever
 						begin
-							if (control[0]) {startx, starty, endx, endy, beam, mode} <= {8'd064, 8'd210, 8'd106, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; // paddle left
-							else {startx, starty, endx, endy, beam, mode} <= {8'd064, 8'd210, 8'd095, 8'd241, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; // paddle left
+							if (control[0]) {startx, starty, endx, endy, beam, mode} <= {8'd060 + ballSize, 8'd210, 8'd105 + ballSize, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; // paddle left
+							else {startx, starty, endx, endy, beam, mode} <= {8'd060 + ballSize, 8'd210, 8'd095 + ballSize, 8'd240, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP}; // paddle left
 						end
 						5'd21: // show right lever
 						begin
-							if (control[1]) {startx, starty, endx, endy, beam, mode} <= {8'd150, 8'd210, 8'd192, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP};  // paddle right up
-							else {startx, starty, endx, endy, beam, mode} <= {8'd161, 8'd241, 8'd192, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP};  // paddle right down
+							if (control[1]) {startx, starty, endx, endy, beam, mode} <= {8'd150 - ballSize, 8'd210, 8'd195 - ballSize, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP};  // paddle right up
+							else {startx, starty, endx, endy, beam, mode} <= {8'd160 - ballSize, 8'd240, 8'd195 - ballSize, 8'd210, REG_DATA_BEAM_HI, REG_DATA_MODE_EXP};  // paddle right down
 						end
 						default: ;
 					endcase
