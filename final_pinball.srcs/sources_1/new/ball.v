@@ -13,10 +13,10 @@
 
 localparam [7:0] initialx = 8'd230;
 localparam [7:0] initialy = 8'd100;
-localparam signed [7:0] initialdy = -6;
-localparam [3:0] max_velo = 4'd10;
-localparam [1:0] gravity_magnitude = 2'd2;
-localparam [3:0] gravity_rate = 4'd4;
+localparam signed [7:0] initialdy = -7;
+localparam signed [7:0] max_velo = 4'd8;
+localparam [1:0] gravity_magnitude = 2'd1;
+localparam [3:0] gravity_rate = 4'd10;
 
 module ball(
 	input wire pclk,
@@ -34,40 +34,58 @@ assign reset = control[2];
 
 assign size = 4'h8;
 
+// Initial speed
+reg signed [7:0] dx = 1; 
+reg signed [7:0] dy = initialdy;
+
 reg [7:0] newx = initialx;
 reg [7:0] newy = initialy;
+reg signed [7:0] newdx = 0;
+reg signed [7:0] newdy = initialdy;
+
+reg [3:0] gravity_ctr = 0;
+wire gravity_tick = (gravity_ctr == gravity_rate);
 
 always @(posedge gameclk)
 begin
 	posx <= newx;
 	posy <= newy;
+	dx <= newdx;
+	dy <= newdy;
+	
+	if (gravity_tick)
+	begin
+		gravity_ctr <= 0;
+	end
+	else gravity_ctr <= gravity_ctr + 1;
 end
 
 
-// ******* CALCULATIONS *******
 
-// Initial speed
-reg signed [7:0] dx = 1; 
-reg signed [7:0] dy = initialdy;
+
 
 // Storage registers
 reg [7:0] storex;
 reg [7:0] storey;
+reg signed [7:0] storedx;
+reg signed [7:0] storedy;
+wire [7:0] abs_storedy = (storedy < 0) ? storedy * -1: storedy;
+
 
 // Status
 reg collision = 0;
+reg gravity_applied = 0;
 wire [3:0] situation;
 
 // Counters
 
 reg [1:0] step = 0;
-reg [3:0] gravity_ctr = 0;
 
 
 always @(posedge pclk)
 begin
 	case(step)
-		2'd0: // React to collision, modify velocity accordingly
+		2'd0: // React to collision at current position, modify velocity accordingly
 		begin		
 			if (!reset)
 			begin
@@ -77,22 +95,37 @@ begin
 				case (situation) // left, right, top, bottom
 					4'b1000, 4'b0100:  // left, right
 					begin
-						dx <= (!collision) ? dx * -1: dx;
+						// if the collision has not been detected yet
+						// flip the velocity
+						// otherwise use old value 
+						storedx <= (!collision) ? dx * -1: storedx;
+						// if collision bit is on we know gravity has been applied
+						gravity_applied <= (collision) ? 1 : 0;
+						storedy <= dy;
 						collision <= 1;
 					end
 					4'b0010, 4'b0001, 4'b1110, 4'b1101:  // top, bottom, odd case when both sides and top hit
 					begin
-						dy <= (!collision) ? dy * -1: dy;
+						storedy <= (!collision) ? dy-1 * -1: storedy;
+						gravity_applied <= (collision) ? 1 : 0;
+						storedx <= dx;
 						collision <= 1;
 					end
 					4'b1010, 4'b1001, 4'b0110, 4'b0101: // Corners
 					begin
-						dx <= (!collision) ? dx * -1: dx;
-						dy <= (!collision) ? dy * -1: dy;
+						storedx <= (!collision) ? dy * -1: storedy;
+						storedy <= (!collision) ? dx * -1: storedx;
+						gravity_applied <= (collision) ? 1 : 0;
 						collision <= 1;
 					end
 					
-					default: collision <= 0;
+					default: 
+					begin
+						storedx <= dx;
+						storedy <= dy;
+						collision <= 0;
+						gravity_applied <= 0;
+					end
 					
 				endcase
 			
@@ -101,33 +134,37 @@ begin
 			begin 
 				storex <= initialx;
 				storey <= initialy;
-				dx <= 0;
-				dy <= initialdy;
+				storedx <= 0;
+				storedy <= initialdy;
+				gravity_applied <= 0;
 			end 
 			step <= step + 1;
 		end
 		2'd1: // apply gravity
 		begin
-			if (gravity_ctr == gravity_rate)
+			if (gravity_tick)
 			begin // only accelerate if under max speed
 				// make sure to subract unsigned numbers only
-				if (dy < max_velo)
+				if (storedy < max_velo && !gravity_applied) 
 				begin
-					dy <= (dy > 0) ? dy + gravity_magnitude : -1 * ((dy * -1) - gravity_magnitude);
+					// if gravity hasnt been applied yet, apply it
+					storedy <= (storedy >= 0) ? storedy + gravity_magnitude : -1 * (abs_storedy - gravity_magnitude);
+					gravity_applied <= 1;
 				end
-				else dy <= dy;
-				gravity_ctr <= 0; // reset counter
+				else if (storedy > max_velo) storedy <= max_velo;
+				else storedy <= storedy;
 			end
-			else gravity_ctr <= gravity_ctr + 1;
 			
-			dx <= dx;
+			storedx <= storedx;
 			
 			step <= step + 1;
 		end
 		2'd2: // update location
 		begin
-			newx <= storex + dx;
-			newy <= storey + dy;
+			newx <= storex + storedx;
+			newy <= storey + storedy;
+			newdy <= storedy;
+			newdx <= storedx;
 			step <= 2'd0; // back to start
 		end
 		default: step <= 2'd0; // back to start;
@@ -136,10 +173,10 @@ end
 
 /******************************* functions ******************/    
 
-assign situation[3] = (posx < 20); // left
-assign situation[2] = (posx > 240); // right
-assign situation[1] = (posy < 20); // top
-assign situation[0] = (posy > 240); // bottom
+assign situation[3] = (posx < 50); // left
+assign situation[2] = (posx + size > 200); // right
+assign situation[1] = (posy < 50); // top
+assign situation[0] = (posy + size > 200); // bottom
 
 function [3:0] SITUATION;
 input topLX, topLY; 

@@ -95,7 +95,7 @@ assign gameclk = (frame_counter == 0); // clk every 6 (0-5) frames, or 10 FPS
 
 always @(posedge vsync)
 begin
-	if (frame_counter == 6) frame_counter <= 0;
+	if (frame_counter == 2) frame_counter <= 0;
 	else frame_counter <= frame_counter + 1;
 end
 
